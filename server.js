@@ -19,6 +19,19 @@ app.get('/api/products', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+// API Endpoint to add a new product
+app.post('/api/products', async (req, res) => {
+    try {
+        const { name, price, description, image } = req.body;
+        await db.execute({
+            sql: 'INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)',
+            args: [name, price, description, image]
+        });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server running live on http://localhost:${PORT}`);
