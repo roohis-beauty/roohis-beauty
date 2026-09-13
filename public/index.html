@@ -37,22 +37,7 @@
     </div>
 
     <script>
-        // Fetch products directly from your Node.js backend
-        fetch('/api/products')
-            .then(res => res.json())
-            .then(data => {
-                const grid = document.getElementById('product-grid');
-                grid.innerHTML = data.products.map(p => `
-                    <div class="card">
-                        <img src="${p.image}" alt="${p.name}">
-                        <h3>${p.name}</h3>
-                        <p>${p.description}</p>
-                        <div class="price">$${p.sale_price || p.price}</div>
-                        <button class="btn">View Details</button>
-                    </div>
-                `).join('');
-            })
-            .catch(err => console.error('Error loading products:', err));
+
     </script>
 </body>
 </html>
