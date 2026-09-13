@@ -3,41 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roohi's | Industrial Clinical Beauty</title>
-    <!-- Google Fonts Link -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Roohi's | Luxury Skincare</title>
+    <!-- Google Fonts for High-End Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0f1115; color: #f0f2f5; padding: 20px; }
-        header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid #2a2e37; padding-bottom: 20px; }
-        h1 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; }
-        p.subtitle { color: #8a94a6; margin-top: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: #181b21; border: 1px solid #2a2e37; border-radius: 8px; padding: 20px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-4px); border-color: #4a5568; }
-        .card img { width: 100%; border-radius: 4px; margin-bottom: 15px; }
-        .card h3 { color: #fff; margin-bottom: 8px; }
-        .card p { color: #8a94a6; font-size: 0.9rem; margin-bottom: 15px; }
-        .price { font-size: 1.25rem; font-weight: bold; color: #63b3ed; }
-        .btn { display: inline-block; width: 100%; padding: 10px; background: #3182ce; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center; margin-top: 10px; }
-        .btn:hover { background: #2b6cb0; }
+        :root {
+            --bg-color: #fdfbf7;
+            --text-color: #1a1a1a;
+            --accent-color: #c5a059;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 5%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent-color); }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(48px, 7vw, 90px);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .hero p {
+            font-size: 16px;
+            max-width: 500px;
+            color: #666;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* 3D-Scrolling Tube Image Container */
+        .tube-container {
+            width: 220px;
+            height: 350px;
+            margin-top: 20px;
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+        }
+        .tube-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>ROOHI'S</h1>
-        <p class="subtitle">Clinical Formulations & Industrial Skincare</p>
-    </header>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">ROOHI'S</div>
+        <ul class="nav-links">
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">Collections</a></li>
+            <li><a href="#">Philosophy</a></li>
+            <li><a href="#">Account</a></li>
+        </ul>
+    </nav>
 
-    <div class="grid" id="product-grid">
-        <!-- Database items populate here dynamically -->
-    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Pure science, <br>meet luxury.</h1>
+        <p>Designed for absolute skin clarity. Clean formulas crafted to elevate your daily ritual.</p>
+        
+        <!-- Interactive 3D Scroll Tube Element -->
+        <div class="tube-container" id="tubeElement">
+            <!-- Replace src with your tube PNG image link or local path later -->
+            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500" alt="Product Tube">
+        </div>
+    </section>
 
     <script>
+        // Scroll-driven 3D parallax effect for the tube PNG
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const tube = document.getElementById('tubeElement');
+            
+            // Calculate rotation and movement based on scroll depth
+            const rotateDeg = scrollY * 0.05;
+            const translateY = scrollY * 0.2;
+            const scale = Math.max(1, 1 + scrollY * 0.0005);
 
+            tube.style.transform = `translateY(${translateY}px) rotate(${rotateDeg}deg) scale(${scale})`;
+        });
     </script>
 </body>
 </html>
