@@ -4,139 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roohi's | Luxury Skincare</title>
-    <!-- Google Fonts for High-End Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #fdfbf7;
-            --text-color: #1a1a1a;
-            --accent-color: #c5a059;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Navbar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 5%;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(253, 251, 247, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-        .logo {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 28px;
-            letter-spacing: 2px;
-            font-weight: 600;
-        }
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-            font-size: 14px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-color);
-            transition: color 0.3s;
-        }
-        .nav-links a:hover { color: var(--accent-color); }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 20px;
-            position: relative;
-        }
-        .hero h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(48px, 7vw, 90px);
-            font-weight: 400;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-        .hero p {
-            font-size: 16px;
-            max-width: 500px;
-            color: #666;
-            margin-bottom: 40px;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-
-        /* 3D-Scrolling Tube Image Container */
-        .tube-container {
-            width: 220px;
-            height: 350px;
-            margin-top: 20px;
-            will-change: transform;
-            transition: transform 0.1s ease-out;
-        }
-        .tube-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav>
-        <div class="logo">ROOHI'S</div>
+    <!-- Transparent Navbar -->
+    <nav id="navbar">
+        <a href="#" class="nav-logo">ROOHI'S</a>
         <ul class="nav-links">
             <li><a href="#">Shop</a></li>
             <li><a href="#">Collections</a></li>
-            <li><a href="#">Philosophy</a></li>
             <li><a href="#">Account</a></li>
         </ul>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Pure science, <br>meet luxury.</h1>
-        <p>Designed for absolute skin clarity. Clean formulas crafted to elevate your daily ritual.</p>
-        
-        <!-- Interactive 3D Scroll Tube Element -->
-        <div class="tube-container" id="tubeElement">
-            <!-- Replace src with your tube PNG image link or local path later -->
-            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500" alt="Product Tube">
-        </div>
+        <h1 class="hero-title" id="heroTitle">ROOHI'S</h1>
     </section>
 
-    <script>
-        // Scroll-driven 3D parallax effect for the tube PNG
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const tube = document.getElementById('tubeElement');
-            
-            // Calculate rotation and movement based on scroll depth
-            const rotateDeg = scrollY * 0.05;
-            const translateY = scrollY * 0.2;
-            const scale = Math.max(1, 1 + scrollY * 0.0005);
+<!-- Full-Canvas Floating Product Section -->
+<section class="floating-product-section" id="floatingSection">
+    <!-- Giant text sitting behind the PNG -->
+    <div class="background-text">PURIFY</div>
+    
+    <!-- Floating Cleanser PNG -->
+    <div class="floating-wrapper" id="floatingWrapper">
+        <img src="media/cleanser.png" alt="Cleanser Product">
+    </div>
+</section>
 
-            tube.style.transform = `translateY(${translateY}px) rotate(${rotateDeg}deg) scale(${scale})`;
-        });
-    </script>
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
