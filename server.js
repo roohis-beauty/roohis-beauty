@@ -11,14 +11,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Endpoint to fetch all products dynamically
-app.get('/api/products', (req, res) => {
-    db.all('SELECT * FROM products', [], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ products: rows });
-    });
+app.get('/api/products', async (req, res) => {
+    try {
+        const result = await db.execute('SELECT * FROM products');
+        res.json({ products: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => {
