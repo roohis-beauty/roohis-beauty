@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (textHoverHexDisplay) textHoverHexDisplay.textContent = e.target.value;
     });
 
-    // 3. Save all 4 colors on button click
+    // 3. Save all 4 colors on button click with error handling
     saveBtn?.addEventListener('click', async () => {
         try {
             const res = await fetch('/api/update-config', {
@@ -306,12 +306,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            // Prevent JSON parsing crash on 500 HTML responses
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('Server error response:', errorText);
+                alert('Server error (500). Check console/Vercel logs.');
+                return;
+            }
+
             const data = await res.json();
-            
-            if (res.ok && data.success) {
+            if (data.success) {
                 alert('Theme colors saved successfully!');
             } else {
-                alert('Failed to save settings: ' + (data.error || 'Server error'));
+                alert('Failed to save settings: ' + (data.error || 'Unknown error'));
             }
         } catch (err) {
             console.error('Error saving colors:', err);
