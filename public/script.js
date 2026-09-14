@@ -63,3 +63,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading store theme config:', err);
     }
 });
+
+if (config.text_color) {
+  document.documentElement.style.setProperty('--main-text', config.text_color);
+}
+if (config.text_hover_color) {
+  document.documentElement.style.setProperty('--text-hover', config.text_hover_color);
+}

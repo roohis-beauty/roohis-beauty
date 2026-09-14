@@ -287,3 +287,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+// Add variables for new pickers
+const textColorPicker = document.getElementById('textColorPicker');
+const textHoverColorPicker = document.getElementById('textHoverColorPicker');
+
+// Inside your saveBtn event listener:
+body: JSON.stringify({
+  backgroundColor: colorPicker.value,
+  secondaryColor: secondaryPicker.value,
+  textColor: textColorPicker.value,
+  textHoverColor: textHoverColorPicker.value
+})

@@ -100,3 +100,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
 }
+const { backgroundColor, secondaryColor, textColor, textHoverColor } = req.body || {};
+
+if (textColor) {
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('text_color', ?)`,
+    args: [textColor],
+  });
+}
+
+if (textHoverColor) {
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('text_hover_color', ?)`,
+    args: [textHoverColor],
+  });
+}

@@ -9,6 +9,8 @@
 
     --main-bg: #fdfbf7;
   --accent-bg: #ffffff;
+  --main-text: #1a1a1a;
+  --text-hover: #d4a373;
 }
 }
 
@@ -197,3 +199,12 @@ filter: drop-shadow(50px 50px 60px rgba(0, 0, 0, 0.45));}
 .navbar, 
 .footer {
   background-color: var(--accent-bg) !important;}
+
+  body, p, h1, h2, a {
+  color: var(--main-text);
+}
+
+/* Hover effects */
+a:hover, .btn:hover, .nav-link:hover {
+  color: var(--text-hover) !important;
+}
