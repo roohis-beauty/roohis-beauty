@@ -260,41 +260,62 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 document.addEventListener('DOMContentLoaded', () => {
-  const colorPicker = document.getElementById('bgColorPicker');
-  const hexDisplay = document.getElementById('hexCodeDisplay');
-  const secondaryPicker = document.getElementById('secondaryColorPicker');
-  const secondaryHexDisplay = document.getElementById('secondaryHexDisplay');
-  const saveBtn = document.getElementById('saveConfigBtn');
+    // 1. Grab all 4 color picker elements & hex display spans
+    const bgColorPicker = document.getElementById('bgColorPicker');
+    const hexDisplay = document.getElementById('hexCodeDisplay');
+    
+    const secondaryColorPicker = document.getElementById('secondaryColorPicker');
+    const secondaryHexDisplay = document.getElementById('secondaryHexDisplay');
+    
+    const textColorPicker = document.getElementById('textColorPicker');
+    const textHexDisplay = document.getElementById('textHexDisplay');
+    
+    const textHoverColorPicker = document.getElementById('textHoverColorPicker');
+    const textHoverHexDisplay = document.getElementById('textHoverHexDisplay');
+    
+    const saveBtn = document.getElementById('saveConfigBtn');
 
-  colorPicker?.addEventListener('input', (e) => hexDisplay.textContent = e.target.value);
-  secondaryPicker?.addEventListener('input', (e) => secondaryHexDisplay.textContent = e.target.value);
+    // 2. Real-time hex code text updates
+    bgColorPicker?.addEventListener('input', (e) => {
+        if (hexDisplay) hexDisplay.textContent = e.target.value;
+    });
+    
+    secondaryColorPicker?.addEventListener('input', (e) => {
+        if (secondaryHexDisplay) secondaryHexDisplay.textContent = e.target.value;
+    });
+    
+    textColorPicker?.addEventListener('input', (e) => {
+        if (textHexDisplay) textHexDisplay.textContent = e.target.value;
+    });
+    
+    textHoverColorPicker?.addEventListener('input', (e) => {
+        if (textHoverHexDisplay) textHoverHexDisplay.textContent = e.target.value;
+    });
 
-  saveBtn?.addEventListener('click', async () => {
-    try {
-      const res = await fetch('/api/update-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          backgroundColor: colorPicker.value,
-          secondaryColor: secondaryPicker.value
-        }),
-      });
+    // 3. Save all 4 colors on button click
+    saveBtn?.addEventListener('click', async () => {
+        try {
+            const res = await fetch('/api/update-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    backgroundColor: bgColorPicker ? bgColorPicker.value : null,
+                    secondaryColor: secondaryColorPicker ? secondaryColorPicker.value : null,
+                    textColor: textColorPicker ? textColorPicker.value : null,
+                    textHoverColor: textHoverColorPicker ? textHoverColorPicker.value : null
+                })
+            });
 
-      const data = await res.json();
-      if (data.success) alert('Theme colors saved successfully!');
-    } catch (err) {
-      console.error('Error saving colors:', err);
-    }
-  });
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                alert('Theme colors saved successfully!');
+            } else {
+                alert('Failed to save settings: ' + (data.error || 'Server error'));
+            }
+        } catch (err) {
+            console.error('Error saving colors:', err);
+            alert('Failed to save settings.');
+        }
+    });
 });
-// Add variables for new pickers
-const textColorPicker = document.getElementById('textColorPicker');
-const textHoverColorPicker = document.getElementById('textHoverColorPicker');
-
-// Inside your saveBtn event listener:
-body: JSON.stringify({
-  backgroundColor: colorPicker.value,
-  secondaryColor: secondaryPicker.value,
-  textColor: textColorPicker.value,
-  textHoverColor: textHoverColorPicker.value
-})
