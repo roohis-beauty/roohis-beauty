@@ -23,7 +23,7 @@ body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     overflow-x: hidden;
 
-background-color: var(--main-bg);
+background-color: var(--main-bg) !important;
     color: var(--site-text);
     transition: background-color 0.3s ease; /* Smooth transition when changed */
 }
@@ -48,12 +48,12 @@ nav {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 1000;
 
-    background-color: var(--nav-bg);
+    background-color: var(--accent-bg);
 }
 
 /* Scrolled state for Navbar */
 nav.scrolled {
-    background: rgba(253, 251, 247, 0.85);
+    background: var(--accent-bg);
     backdrop-filter: blur(12px);
     padding: 20px 6%;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
@@ -95,7 +95,7 @@ nav.scrolled .nav-logo {
 }
 
 .nav-links a:hover {
-    color: var(--accent-color);
+    color: var(--accent-bg);
 }
 
 /* Hero Section */
@@ -140,7 +140,7 @@ nav.scrolled .nav-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f4efe6;
+    background: var(--main-bg);
     overflow: hidden;
 }
 
@@ -196,4 +196,4 @@ filter: drop-shadow(50px 50px 60px rgba(0, 0, 0, 0.45));}
 .scroll-animation-area, 
 .navbar, 
 .footer {
-  background-color: var(--accent-bg);}
+  background-color: var(--accent-bg) !important;}
