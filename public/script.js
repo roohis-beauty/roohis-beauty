@@ -47,26 +47,29 @@ window.addEventListener('scroll', () => {
 
 // Load live dynamic theme colors from database
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const res = await fetch('/api/get-config');
-        const config = await res.json();
+  try {
+    const res = await fetch('/api/get-config');
+    if (!res.ok) return;
 
-        if (config.background_color) {
-            document.documentElement.style.setProperty('--main-bg', config.background_color);
-            document.body.style.backgroundColor = 'var(--main-bg)';
-        }
-        
-        if (config.secondary_color) {
-            document.documentElement.style.setProperty('--accent-bg', config.secondary_color);
-        }
-    } catch (err) {
-        console.error('Error loading store theme config:', err);
+    const config = await res.json();
+
+    if (config.background_color) {
+      document.documentElement.style.setProperty('--main-bg', config.background_color);
+      document.body.style.backgroundColor = 'var(--main-bg)';
     }
-});
 
-if (config.text_color) {
-  document.documentElement.style.setProperty('--main-text', config.text_color);
-}
-if (config.text_hover_color) {
-  document.documentElement.style.setProperty('--text-hover', config.text_hover_color);
-}
+    if (config.secondary_color) {
+      document.documentElement.style.setProperty('--accent-bg', config.secondary_color);
+    }
+
+    if (config.text_color) {
+      document.documentElement.style.setProperty('--main-text', config.text_color);
+    }
+
+    if (config.text_hover_color) {
+      document.documentElement.style.setProperty('--text-hover', config.text_hover_color);
+    }
+  } catch (err) {
+    console.error('Error loading store theme config:', err);
+  }
+});
