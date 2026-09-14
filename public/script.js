@@ -87,3 +87,17 @@ window.addEventListener('scroll', () => {
 
 // Instantly changes the background color across the whole site
 document.documentElement.style.setProperty('--site-bg', '#f4efe6');
+
+// Apply saved background color on main storefront load
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/get-config');
+    const config = await res.json();
+
+    if (config.background_color) {
+      document.body.style.backgroundColor = config.background_color;
+    }
+  } catch (err) {
+    console.error('Error fetching storefront background color:', err);
+  }
+});

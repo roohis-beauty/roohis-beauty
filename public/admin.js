@@ -186,3 +186,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// ==========================================
+// STOREFRONT CONFIGURATION (Background Color)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Grab your color input and button elements by their HTML IDs
+  const colorPicker = document.getElementById('bg-color-picker'); // Update ID if different
+  const saveBtn = document.getElementById('save-settings-btn');   // Update ID if different
+
+  if (saveBtn && colorPicker) {
+    saveBtn.addEventListener('click', async () => {
+      const selectedColor = colorPicker.value;
+
+      try {
+        const response = await fetch('/api/update-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ backgroundColor: selectedColor }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Storefront background updated successfully!');
+        } else {
+          alert('Failed to save settings: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error saving background color:', err);
+        alert('Server error saving settings.');
+      }
+    });
+  }
+});
+// ==========================================
+// STOREFRONT BACKGROUND COLOR SAVER
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const colorPicker = document.getElementById('bgColorPicker');
+  const hexDisplay = document.getElementById('hexCodeDisplay');
+  const saveBtn = document.getElementById('saveConfigBtn');
+
+  // Sync the text display (#fdfbf7) when picking a color
+  if (colorPicker && hexDisplay) {
+    colorPicker.addEventListener('input', (e) => {
+      hexDisplay.textContent = e.target.value;
+    });
+  }
+
+  // Save color to database
+  if (saveBtn && colorPicker) {
+    saveBtn.addEventListener('click', async () => {
+      const selectedColor = colorPicker.value;
+
+      try {
+        const response = await fetch('/api/update-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ backgroundColor: selectedColor }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Storefront background updated successfully!');
+        } else {
+          alert('Failed to save settings: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error saving background color:', err);
+        alert('Server error saving settings.');
+      }
+    });
+  }
+});
