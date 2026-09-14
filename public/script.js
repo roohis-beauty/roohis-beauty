@@ -84,3 +84,6 @@ window.addEventListener('scroll', () => {
         floatingWrapper.style.transform = `translateY(${translateY}px)`;
     }
 });
+
+// Instantly changes the background color across the whole site
+document.documentElement.style.setProperty('--site-bg', '#f4efe6');

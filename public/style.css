@@ -1,18 +1,28 @@
 :root {
     --text-color: #1a1a1a;
     --accent-color: #c5a059;
+    html {
+    color-scheme: light;
+    --site-bg: #fdfbf7;        /* The cream background */
+    --site-text: #1a1a1a;      /* Primary text color */
+    --nav-bg: #fdfbf7;         /* Navbar background */
+}
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* Living, breathing moving gradient background */
 body {
-    background: linear-gradient(120deg, #fdfbf7, #f4efe6, #faf6ee, #f1ece1);
+    /* background: linear-gradient(120deg, #fdfbf7, #f4efe6, #faf6ee, #f1ece1); */
     background-size: 400% 400%;
     animation: gradientShift 18s ease infinite;
-    color: var(--text-color);
+    /* color: var(--text-color); */
     font-family: 'Plus Jakarta Sans', sans-serif;
     overflow-x: hidden;
+
+    background-color: var(--site-bg);
+    color: var(--site-text);
+    transition: background-color 0.3s ease; /* Smooth transition when changed */
 }
 
 @keyframes gradientShift {
@@ -31,9 +41,11 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 35px 6%;
-    background: transparent;
+    /* background: transparent; */
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 1000;
+
+    background-color: var(--nav-bg);
 }
 
 /* Scrolled state for Navbar */

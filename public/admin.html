@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storefront Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin specific layout styling */
+        body {
+            padding: 50px 10%;
+            background: #f4efe6;
+        }
+        .admin-card {
+            background: #fdfbf7;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .control-group {
+            margin-bottom: 20px;
+        }
+        .control-group label {
+            display: block;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .control-group input[type="color"] {
+            width: 100px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+        }
+        .save-btn {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <h1>Store Customizer</h1>
+        <p>Modify your storefront appearance in real-time.</p>
+        <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">
+
+        <!-- Color Scheme Control -->
+        <div class="control-group">
+            <label for="bgColorPicker">Global Background Color</label>
+            <input type="color" id="bgColorPicker" value="#fdfbf7">
+        </div>
+
+        <button class="save-btn" id="saveConfigBtn">Save & Deploy Changes</button>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
