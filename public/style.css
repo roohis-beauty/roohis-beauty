@@ -6,6 +6,9 @@
     --site-bg: #fdfbf7;        /* The cream background */
     --site-text: #1a1a1a;      /* Primary text color */
     --nav-bg: #fdfbf7;         /* Navbar background */
+
+    --main-bg: #fdfbf7;
+  --accent-bg: #ffffff;
 }
 }
 
@@ -20,7 +23,7 @@ body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     overflow-x: hidden;
 
-    background-color: var(--site-bg);
+background-color: var(--main-bg);
     color: var(--site-text);
     transition: background-color 0.3s ease; /* Smooth transition when changed */
 }
@@ -189,3 +192,8 @@ filter: drop-shadow(50px 50px 60px rgba(0, 0, 0, 0.45));}
         max-width: 75vw; /* Takes up more of the mobile width */
     }
 }
+.hero-section, 
+.scroll-animation-area, 
+.navbar, 
+.footer {
+  background-color: var(--accent-bg);

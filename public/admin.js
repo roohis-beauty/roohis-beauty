@@ -259,3 +259,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+document.addEventListener('DOMContentLoaded', () => {
+  const colorPicker = document.getElementById('bgColorPicker');
+  const hexDisplay = document.getElementById('hexCodeDisplay');
+  const secondaryPicker = document.getElementById('secondaryColorPicker');
+  const secondaryHexDisplay = document.getElementById('secondaryHexDisplay');
+  const saveBtn = document.getElementById('saveConfigBtn');
+
+  colorPicker?.addEventListener('input', (e) => hexDisplay.textContent = e.target.value);
+  secondaryPicker?.addEventListener('input', (e) => secondaryHexDisplay.textContent = e.target.value);
+
+  saveBtn?.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/update-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          backgroundColor: colorPicker.value,
+          secondaryColor: secondaryPicker.value
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) alert('Theme colors saved successfully!');
+    } catch (err) {
+      console.error('Error saving colors:', err);
+    }
+  });
+});

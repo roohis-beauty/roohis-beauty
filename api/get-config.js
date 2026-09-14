@@ -18,3 +18,27 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
+const result = await db.execute('SELECT key, value FROM store_config');
+
+// Convert key-value rows into a clean JavaScript object: 
+// { background_color: '#fdfbf7', secondary_color: '#ffffff' }
+const config = {};
+result.rows.forEach(row => {
+  config[row.key] = row.value;
+});
+
+res.json(config);
+export default async function handler(req, res) {
+  try {
+    const result = await db.execute('SELECT key, value FROM store_config');
+    const config = {};
+    
+    result.rows.forEach(row => {
+      config[row.key] = row.value;
+    });
+
+    res.json(config);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

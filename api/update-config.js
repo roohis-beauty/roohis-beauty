@@ -22,3 +22,45 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
+const { backgroundColor, secondaryColor } = req.body;
+
+if (backgroundColor) {
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('background_color', ?)`,
+    args: [backgroundColor],
+  });
+}
+
+if (secondaryColor) {
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('secondary_color', ?)`,
+    args: [secondaryColor],
+  });
+}
+
+res.json({ success: true });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
+
+  const { backgroundColor, secondaryColor } = req.body;
+
+  try {
+    if (backgroundColor) {
+      await db.execute({
+        sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('background_color', ?)`,
+        args: [backgroundColor],
+      });
+    }
+
+    if (secondaryColor) {
+      await db.execute({
+        sql: `INSERT OR REPLACE INTO store_config (key, value) VALUES ('secondary_color', ?)`,
+        args: [secondaryColor],
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

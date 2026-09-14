@@ -101,3 +101,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error fetching storefront background color:', err);
   }
 });
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/get-config');
+    const config = await res.json();
+
+    if (config.background_color) {
+      document.documentElement.style.setProperty('--main-bg', config.background_color);
+      document.body.style.backgroundColor = 'var(--main-bg)';
+    }
+    if (config.secondary_color) {
+      document.documentElement.style.setProperty('--accent-bg', config.secondary_color);
+    }
+  } catch (err) {
+    console.error('Error loading store config:', err);
+  }
+});
