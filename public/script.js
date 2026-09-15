@@ -41,6 +41,7 @@ window.addEventListener('scroll', () => {
 // 3. Slider logic functions
 let currentSlide = 0;
 let totalSlides = 0;
+let autoSlideInterval = null;
 
 function setupSlider(imageUrls) {
     const track = document.getElementById('sliderTrack');
@@ -63,6 +64,7 @@ function setupSlider(imageUrls) {
         prevBtn.onclick = () => {
             currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
             updateSliderPosition();
+            restartAutoSlide();
         };
     }
 
@@ -70,7 +72,13 @@ function setupSlider(imageUrls) {
         nextBtn.onclick = () => {
             currentSlide = (currentSlide + 1) % totalSlides;
             updateSliderPosition();
+            restartAutoSlide();
         };
+    }
+
+    // Automatically transition slides if there is more than 1 image
+    if (totalSlides > 1) {
+        startAutoSlide();
     }
 }
 
@@ -79,6 +87,18 @@ function updateSliderPosition() {
     if (track) {
         track.style.transform = `translateX(-${currentSlide * 100}%)`;
     }
+}
+
+function startAutoSlide() {
+    if (autoSlideInterval) clearInterval(autoSlideInterval);
+    autoSlideInterval = setInterval(() => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSliderPosition();
+    }, 3500); // Transitions every 3.5 seconds
+}
+
+function restartAutoSlide() {
+    startAutoSlide();
 }
 
 // 4. Single DOMContentLoaded listener for Theme, Dynamic Text, and Slider
