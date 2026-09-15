@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     // Stream raw file payload directly to Vercel Blob
     const blob = await put(filename, req, {
       access: 'public',
+      addRandomSuffix: true, // Prevents duplicate filename errors
       token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
