@@ -110,15 +110,15 @@ function setupSlider(imageUrls) {
     const prevBtn = document.getElementById('prevSlideBtn');
     const nextBtn = document.getElementById('nextSlideBtn');
 
-    prevBtn?.addEventListener('click', () => {
+    prevBtn?.onclick = () => {
         currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
         updateSliderPosition();
-    });
+    };
 
-    nextBtn?.addEventListener('click', () => {
+    nextBtn?.onclick = () => {
         currentSlide = (currentSlide + 1) % totalSlides;
         updateSliderPosition();
-    });
+    };
 }
 
 function updateSliderPosition() {
@@ -128,26 +128,33 @@ function updateSliderPosition() {
     }
 }
 
-// Load slider images alongside storefront config
+// Load slider images
 async function loadSliderConfig() {
     try {
         const res = await fetch('/api/get-config');
         if (!res.ok) return;
-        const config = await res.json();
 
-        if (config.slider_images) {
-            let urls = config.slider_images;
-            
-            // Safely parse JSON if it comes back as a raw string
+        const rawData = await res.json();
+        
+        // Handle array response or object response format seamlessly
+        let sliderVal = null;
+        if (Array.isArray(rawData)) {
+            const item = rawData.find(i => i.key === 'slider_images');
+            if (item) sliderVal = item.value;
+        } else if (rawData.slider_images) {
+            sliderVal = rawData.slider_images;
+        }
+
+        if (sliderVal) {
+            let urls = sliderVal;
             if (typeof urls === 'string') {
                 try {
                     urls = JSON.parse(urls);
                 } catch (e) {
-                    console.error('Failed to parse slider_images JSON string:', e);
+                    console.error('Failed to parse slider JSON:', e);
                 }
             }
 
-            // Ensure we pass a valid array to setupSlider
             if (Array.isArray(urls) && urls.length > 0) {
                 setupSlider(urls);
             }
