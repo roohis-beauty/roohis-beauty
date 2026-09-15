@@ -6,13 +6,13 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Safely extract key/value regardless of how Vercel parsed req.body
+        // Handle pre-parsed objects and raw JSON strings safely
         let body = req.body;
         if (typeof body === 'string') {
             try {
                 body = JSON.parse(body);
             } catch (e) {
-                // Keep as is if parsing fails
+                // Keep raw string if parsing fails
             }
         }
 
@@ -22,13 +22,11 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing key parameter' });
         }
 
-        // Initialize Turso database connection
         const db = createClient({
             url: process.env.TURSO_DATABASE_URL,
             authToken: process.env.TURSO_AUTH_TOKEN,
         });
 
-        // Ensure value is formatted as a valid string for database storage
         const stringValue = typeof value === 'string' ? value : JSON.stringify(value ?? '');
 
         await db.execute({
@@ -40,6 +38,6 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true });
     } catch (error) {
         console.error('Update config error:', error);
-        return res.status(500).json({ error: error.message || 'Failed to update configuration' });
+        return res.status(500).json({ error: error.message || 'Database update failed' });
     }
 }
