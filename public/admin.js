@@ -312,9 +312,9 @@ uploadSliderBtn?.addEventListener('click', async () => {
             const res = await fetch('/api/update-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    slider_images: JSON.stringify(uploadedUrls)
-                })
+               body: JSON.stringify({
+                slider_images: JSON.stringify(uploadedUrls)
+            })
             });
             const data = await res.json();
             if (data.success) {
