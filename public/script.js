@@ -50,6 +50,7 @@ function setupSlider(imageUrls) {
     imageUrls.forEach(url => {
         const img = document.createElement('img');
         img.src = url;
+        img.alt = 'Slider Image';
         track.appendChild(img);
     });
 
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             Object.assign(configMap, rawData);
         }
 
-        // Check both camelCase and snake_case so colors always match database keys
+        // Check both camelCase and snake_case for CSS variables
         const bgColor = configMap.backgroundColor || configMap.background_color;
         const secondaryColor = configMap.secondaryColor || configMap.secondary_color;
         const textColor = configMap.textColor || configMap.text_color;
@@ -117,17 +118,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.documentElement.style.setProperty('--text-hover', textHoverColor);
         }
 
-        // Apply Dynamic Product Text
+        // Apply Dynamic Product Text using matching IDs from index.html
         if (configMap['product_title']) {
-            const titleEl = document.getElementById('displayProductTitle');
+            const titleEl = document.getElementById('productTitleDisplay');
             if (titleEl) titleEl.textContent = configMap['product_title'];
         }
         if (configMap['product_desc']) {
-            const descEl = document.getElementById('displayProductDesc');
+            const descEl = document.getElementById('productDescDisplay');
             if (descEl) descEl.textContent = configMap['product_desc'];
         }
 
-        // Render Slider Images
+        // Render Slider Images safely
         if (configMap.slider_images) {
             let urls = configMap.slider_images;
             if (typeof urls === 'string') {
