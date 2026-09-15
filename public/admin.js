@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function showDashboard() {
-        registerView.classList.add('hidden');
-        loginView.classList.add('hidden');
-        dashboardView.classList.remove('hidden');
+        registerView?.classList.add('hidden');
+        loginView?.classList.add('hidden');
+        dashboardView?.classList.remove('hidden');
         loadCurrentConfig();
     }
 
@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
     // Register
     registerBtn?.addEventListener('click', async () => {
-        const email = document.getElementById('regEmail').value;
-        const password = document.getElementById('regPassword').value;
+        const email = document.getElementById('regEmail')?.value;
+        const password = document.getElementById('regPassword')?.value;
 
         if (!email || !password) {
             alert('Please fill out all fields.');
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Login
     loginBtn?.addEventListener('click', async () => {
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+        const email = document.getElementById('loginEmail')?.value;
+        const password = document.getElementById('loginPassword')?.value;
 
         try {
             const res = await fetch('/api/auth/login', {
@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout
     logoutBtn?.addEventListener('click', () => {
         sessionStorage.removeItem('adminUser');
-        dashboardView.classList.add('hidden');
-        loginView.classList.remove('hidden');
+        dashboardView?.classList.add('hidden');
+        loginView?.classList.remove('hidden');
     });
 
     // Delete Account
@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 alert('Account deleted. System ready for a new owner to register.');
                 sessionStorage.removeItem('adminUser');
-                dashboardView.classList.add('hidden');
-                registerView.classList.remove('hidden');
+                dashboardView?.classList.add('hidden');
+                registerView?.classList.remove('hidden');
             } else {
                 alert('Failed to delete account.');
             }
@@ -182,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
     // 5. Data Fetching & Saving
     // -----------------------------------------------------------------
-    // Load active settings from database into inputs when dashboard loads
     async function loadCurrentConfig() {
         try {
             const res = await fetch('/api/get-config');
@@ -190,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const config = await res.json();
 
+            // Populate Colors
             if (config.backgroundColor && bgColorPicker) {
                 bgColorPicker.value = config.backgroundColor;
                 if (hexDisplay) hexDisplay.textContent = config.backgroundColor;
@@ -206,6 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 textHoverColorPicker.value = config.textHoverColor;
                 if (textHoverHexDisplay) textHoverHexDisplay.textContent = config.textHoverColor;
             }
+
+            // Populate Product Text
             if (config.product_title && productTitleInput) {
                 productTitleInput.value = config.product_title;
             }
@@ -252,28 +254,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save Product Title and Description
     saveTextBtn?.addEventListener('click', async () => {
-    const title = productTitleInput ? productTitleInput.value : '';
-    const desc = productDescInput ? productDescInput.value : '';
+        const title = productTitleInput ? productTitleInput.value : '';
+        const desc = productDescInput ? productDescInput.value : '';
 
-    try {
-        const res = await fetch('/api/update-config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                product_title: title,
-                product_desc: desc
-            })
-        });
+        try {
+            const res = await fetch('/api/update-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_title: title,
+                    product_desc: desc
+                })
+            });
 
-        const data = await res.json();
-        if (data.success) {
-            alert('Product text saved successfully!');
-        } else {
-            alert('Failed to save text.');
+            const data = await res.json();
+            if (data.success) {
+                alert('Product text saved successfully!');
+            } else {
+                alert('Failed to save text.');
+            }
+        } catch (err) {
+            console.error('Failed to save text:', err);
+            alert('Error saving text.');
         }
-    } catch (err) {
-        console.error('Failed to save text:', err);
-        alert('Error saving text.');
-    }
-});
+    });
 });
