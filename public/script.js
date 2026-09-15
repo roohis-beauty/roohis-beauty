@@ -1,10 +1,9 @@
-// Scroll animation handler
+// 1. Scroll animation handler (Navbar frosted glass & Hero title parallax)
 window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     const navbar = document.getElementById('navbar');
     const heroTitle = document.getElementById('heroTitle');
 
-    // Toggle navbar frosted glass background
     if (navbar) {
         if (scrollY > 40) {
             navbar.classList.add('scrolled');
@@ -13,7 +12,6 @@ window.addEventListener('scroll', () => {
         }
     }
 
-    // Smoothly parallax and fade out the giant hero title as you scroll down
     if (heroTitle && scrollY <= window.innerHeight) {
         const progress = scrollY / (window.innerHeight * 0.6);
         const scale = Math.max(0.75, 1 - progress * 0.25);
@@ -25,7 +23,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Gentle, smooth scroll movement for the floating product canvas
+// 2. Floating product PNG smooth movement
 window.addEventListener('scroll', () => {
     const floatingSection = document.getElementById('floatingSection');
     const floatingWrapper = document.getElementById('floatingWrapper');
@@ -33,64 +31,14 @@ window.addEventListener('scroll', () => {
     if (!floatingSection || !floatingWrapper) return;
 
     const rect = floatingSection.getBoundingClientRect();
-    
-    // Only animate when the section is passing through the screen view
     if (rect.top <= window.innerHeight && rect.bottom >= 0) {
         const scrollProgress = (window.innerHeight - rect.top) / window.innerHeight;
-
-        // Subtle upward movement as you scroll
         const translateY = (scrollProgress - 0.5) * -100; 
-
         floatingWrapper.style.transform = `translateY(${translateY}px)`;
     }
 });
 
-// Unified loader for theme colors and dynamic text
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const res = await fetch('/api/get-config');
-    if (!res.ok) return;
-
-    const rawData = await res.json();
-
-    // Convert array format or object format seamlessly
-    const configMap = {};
-    if (Array.isArray(rawData)) {
-      rawData.forEach(item => { configMap[item.key] = item.value; });
-    } else {
-      Object.assign(configMap, rawData);
-    }
-
-    // 1. Apply Theme Colors
-    if (configMap.background_color) {
-      document.documentElement.style.setProperty('--main-bg', configMap.background_color);
-      document.body.style.backgroundColor = 'var(--main-bg)';
-    }
-    if (configMap.secondary_color) {
-      document.documentElement.style.setProperty('--accent-bg', configMap.secondary_color);
-    }
-    if (configMap.text_color) {
-      document.documentElement.style.setProperty('--main-text', configMap.text_color);
-    }
-    if (configMap.text_hover_color) {
-      document.documentElement.style.setProperty('--text-hover', configMap.text_hover_color);
-    }
-
-    // 2. Apply Dynamic Product Text
-    if (configMap['product_title']) {
-      const titleEl = document.getElementById('displayProductTitle');
-      if (titleEl) titleEl.textContent = configMap['product_title'];
-    }
-    if (configMap['product_desc']) {
-      const descEl = document.getElementById('displayProductDesc');
-      if (descEl) descEl.textContent = configMap['product_desc'];
-    }
-
-  } catch (err) {
-    console.error('Error loading store configuration:', err);
-  }
-});
-
+// 3. Slider logic functions
 let currentSlide = 0;
 let totalSlides = 0;
 
@@ -110,15 +58,19 @@ function setupSlider(imageUrls) {
     const prevBtn = document.getElementById('prevSlideBtn');
     const nextBtn = document.getElementById('nextSlideBtn');
 
-    prevBtn?.onclick = () => {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        updateSliderPosition();
-    };
+    if (prevBtn) {
+        prevBtn.onclick = () => {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSliderPosition();
+        };
+    }
 
-    nextBtn?.onclick = () => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateSliderPosition();
-    };
+    if (nextBtn) {
+        nextBtn.onclick = () => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSliderPosition();
+        };
+    }
 }
 
 function updateSliderPosition() {
@@ -128,25 +80,50 @@ function updateSliderPosition() {
     }
 }
 
-// Load slider images
-async function loadSliderConfig() {
+// 4. Single DOMContentLoaded listener for Theme, Dynamic Text, and Slider
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const res = await fetch('/api/get-config');
         if (!res.ok) return;
 
         const rawData = await res.json();
-        
-        // Handle array response or object response format seamlessly
-        let sliderVal = null;
+
+        // Standardize output to key-value map
+        const configMap = {};
         if (Array.isArray(rawData)) {
-            const item = rawData.find(i => i.key === 'slider_images');
-            if (item) sliderVal = item.value;
-        } else if (rawData.slider_images) {
-            sliderVal = rawData.slider_images;
+            rawData.forEach(item => { configMap[item.key] = item.value; });
+        } else {
+            Object.assign(configMap, rawData);
         }
 
-        if (sliderVal) {
-            let urls = sliderVal;
+        // Apply Theme Colors
+        if (configMap.background_color) {
+            document.documentElement.style.setProperty('--main-bg', configMap.background_color);
+            document.body.style.backgroundColor = 'var(--main-bg)';
+        }
+        if (configMap.secondary_color) {
+            document.documentElement.style.setProperty('--accent-bg', configMap.secondary_color);
+        }
+        if (configMap.text_color) {
+            document.documentElement.style.setProperty('--main-text', configMap.text_color);
+        }
+        if (configMap.text_hover_color) {
+            document.documentElement.style.setProperty('--text-hover', configMap.text_hover_color);
+        }
+
+        // Apply Dynamic Product Text
+        if (configMap['product_title']) {
+            const titleEl = document.getElementById('displayProductTitle');
+            if (titleEl) titleEl.textContent = configMap['product_title'];
+        }
+        if (configMap['product_desc']) {
+            const descEl = document.getElementById('displayProductDesc');
+            if (descEl) descEl.textContent = configMap['product_desc'];
+        }
+
+        // Render Slider Images
+        if (configMap.slider_images) {
+            let urls = configMap.slider_images;
             if (typeof urls === 'string') {
                 try {
                     urls = JSON.parse(urls);
@@ -154,14 +131,11 @@ async function loadSliderConfig() {
                     console.error('Failed to parse slider JSON:', e);
                 }
             }
-
             if (Array.isArray(urls) && urls.length > 0) {
                 setupSlider(urls);
             }
         }
     } catch (err) {
-        console.error('Error loading slider images:', err);
+        console.error('Error loading store configuration:', err);
     }
-}
-
-document.addEventListener('DOMContentLoaded', loadSliderConfig);
+});
