@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error saving text.');
         }
     });
-    const sliderFileInput = document.getElementById('sliderFileInput');
+   const sliderFileInput = document.getElementById('sliderFileInput');
 const uploadSliderBtn = document.getElementById('uploadSliderBtn');
 
 uploadSliderBtn?.addEventListener('click', async () => {
@@ -288,41 +288,53 @@ uploadSliderBtn?.addEventListener('click', async () => {
         return;
     }
 
+    uploadSliderBtn.disabled = true;
+    uploadSliderBtn.innerText = 'Uploading...';
+
     const uploadedUrls = [];
 
-    for (let file of files) {
-        try {
+    try {
+        for (let file of files) {
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
                 headers: { 'x-filename': file.name },
                 body: file
             });
-            const blobData = await uploadRes.json();
 
+            if (!uploadRes.ok) {
+                const errText = await uploadRes.text();
+                throw new Error(`Upload failed: ${uploadRes.status} - ${errText}`);
+            }
+
+            const blobData = await uploadRes.json();
             if (blobData.url) {
                 uploadedUrls.push(blobData.url);
             }
-        } catch (err) {
-            console.error('Error uploading file:', err);
         }
-    }
 
-    if (uploadedUrls.length > 0) {
-        try {
+        if (uploadedUrls.length > 0) {
             const res = await fetch('/api/update-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                slider_images: JSON.stringify(uploadedUrls)
-            })
+                body: JSON.stringify({
+                    key: 'slider_images',
+                    value: JSON.stringify(uploadedUrls)
+                })
             });
+
             const data = await res.json();
-            if (data.success) {
+            if (res.ok && data.success) {
                 alert('Images uploaded and saved to slider successfully!');
+            } else {
+                alert('Database update failed: ' + (data.error || 'Unknown error'));
             }
-        } catch (err) {
-            console.error('Failed to save slider URLs to DB:', err);
         }
+    } catch (err) {
+        console.error('Slider Upload Error:', err);
+        alert('Upload Error: ' + err.message);
+    } finally {
+        uploadSliderBtn.disabled = false;
+        uploadSliderBtn.innerText = 'Upload Selected Images';
     }
 });
 });
