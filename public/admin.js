@@ -252,27 +252,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save Product Title and Description
     saveTextBtn?.addEventListener('click', async () => {
-        const title = productTitleInput ? productTitleInput.value : '';
-        const desc = productDescInput ? productDescInput.value : '';
+    const title = productTitleInput ? productTitleInput.value : '';
+    const desc = productDescInput ? productDescInput.value : '';
 
-        try {
-            const res = await fetch('/api/update-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_title: title,
-                    product_desc: desc
-                })
-            });
+    try {
+        const res = await fetch('/api/update-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_title: title,
+                product_desc: desc
+            })
+        });
 
-            if (res.ok) {
-                alert('Product text saved successfully!');
-            } else {
-                alert('Failed to save product text.');
-            }
-        } catch (err) {
-            console.error('Failed to save text:', err);
-            alert('Error saving text.');
+        const data = await res.json();
+        if (data.success) {
+            alert('Product text saved successfully!');
+        } else {
+            alert('Failed to save text.');
         }
-    });
+    } catch (err) {
+        console.error('Failed to save text:', err);
+        alert('Error saving text.');
+    }
+});
 });
