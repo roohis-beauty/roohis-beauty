@@ -96,19 +96,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             Object.assign(configMap, rawData);
         }
 
+        // Check both camelCase and snake_case so colors always match database keys
+        const bgColor = configMap.backgroundColor || configMap.background_color;
+        const secondaryColor = configMap.secondaryColor || configMap.secondary_color;
+        const textColor = configMap.textColor || configMap.text_color;
+        const textHoverColor = configMap.textHoverColor || configMap.text_hover_color;
+
         // Apply Theme Colors
-        if (configMap.background_color) {
-            document.documentElement.style.setProperty('--main-bg', configMap.background_color);
+        if (bgColor) {
+            document.documentElement.style.setProperty('--main-bg', bgColor);
             document.body.style.backgroundColor = 'var(--main-bg)';
         }
-        if (configMap.secondary_color) {
-            document.documentElement.style.setProperty('--accent-bg', configMap.secondary_color);
+        if (secondaryColor) {
+            document.documentElement.style.setProperty('--accent-bg', secondaryColor);
         }
-        if (configMap.text_color) {
-            document.documentElement.style.setProperty('--main-text', configMap.text_color);
+        if (textColor) {
+            document.documentElement.style.setProperty('--main-text', textColor);
         }
-        if (configMap.text_hover_color) {
-            document.documentElement.style.setProperty('--text-hover', configMap.text_hover_color);
+        if (textHoverColor) {
+            document.documentElement.style.setProperty('--text-hover', textHoverColor);
         }
 
         // Apply Dynamic Product Text
