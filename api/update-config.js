@@ -11,18 +11,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { backgroundColor, secondaryColor, textColor, textHoverColor } = req.body || {};
+    const { 
+      backgroundColor, 
+      secondaryColor, 
+      textColor, 
+      textHoverColor,
+      product_title,
+      product_desc
+    } = req.body || {};
 
     const updates = [
       { key: 'background_color', value: backgroundColor },
       { key: 'secondary_color', value: secondaryColor },
       { key: 'text_color', value: textColor },
       { key: 'text_hover_color', value: textHoverColor },
+      { key: 'product_title', value: product_title },
+      { key: 'product_desc', value: product_desc },
     ];
 
     for (const item of updates) {
-      if (item.value) {
-        // First try updating an existing row
+      if (item.value !== undefined && item.value !== null) {
+        // Try updating an existing row
         const updateResult = await db.execute({
           sql: `UPDATE store_config SET value = ? WHERE key = ?`,
           args: [item.value, item.key],
@@ -44,9 +53,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
 }
-const { key, value } = await req.json();
-
-await client.execute({
-  sql: "INSERT INTO site_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?",
-  args: [key, value, value]
-});

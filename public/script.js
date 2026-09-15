@@ -45,83 +45,48 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Load live dynamic theme colors from database
+// Unified loader for theme colors and dynamic text
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const res = await fetch('/api/get-config');
     if (!res.ok) return;
 
-    const config = await res.json();
+    const rawData = await res.json();
 
-    if (config.background_color) {
-      document.documentElement.style.setProperty('--main-bg', config.background_color);
+    // Convert array format or object format seamlessly
+    const configMap = {};
+    if (Array.isArray(rawData)) {
+      rawData.forEach(item => { configMap[item.key] = item.value; });
+    } else {
+      Object.assign(configMap, rawData);
+    }
+
+    // 1. Apply Theme Colors
+    if (configMap.background_color) {
+      document.documentElement.style.setProperty('--main-bg', configMap.background_color);
       document.body.style.backgroundColor = 'var(--main-bg)';
     }
-
-    if (config.secondary_color) {
-      document.documentElement.style.setProperty('--accent-bg', config.secondary_color);
+    if (configMap.secondary_color) {
+      document.documentElement.style.setProperty('--accent-bg', configMap.secondary_color);
+    }
+    if (configMap.text_color) {
+      document.documentElement.style.setProperty('--main-text', configMap.text_color);
+    }
+    if (configMap.text_hover_color) {
+      document.documentElement.style.setProperty('--text-hover', configMap.text_hover_color);
     }
 
-    if (config.text_color) {
-      document.documentElement.style.setProperty('--main-text', config.text_color);
-    }
-
-    if (config.text_hover_color) {
-      document.documentElement.style.setProperty('--text-hover', config.text_hover_color);
-    }
-  } catch (err) {
-    console.error('Error loading store theme config:', err);
-  }
-});
-async function loadDynamicText() {
-  try {
-    const res = await fetch('/api/get-config'); 
-    if (!res.ok) return;
-    const data = await res.json(); 
-
-    const configMap = {};
-    data.forEach(item => { configMap[item.key] = item.value; });
-
-    if (configMap['product_title']) {
-      document.getElementById('displayProductTitle').textContent = configMap['product_title'];
-    }
-    if (configMap['product_desc']) {
-      document.getElementById('displayProductDesc').textContent = configMap['product_desc'];
-    }
-  } catch (e) {
-    console.log('Using default static text');
-  }
-}
-
-loadDynamicText();
-
-async function loadSavedText() {
-  try {
-    const res = await fetch('/api/get-config');
-    if (!res.ok) return;
-    const data = await res.json();
-
-    // Map through the database rows
-    const configMap = {};
-    if (Array.isArray(data)) {
-      data.forEach(item => { configMap[item.key] = item.value; });
-    }
-
-    // Apply the saved title if it exists in the database
+    // 2. Apply Dynamic Product Text
     if (configMap['product_title']) {
       const titleEl = document.getElementById('displayProductTitle');
       if (titleEl) titleEl.textContent = configMap['product_title'];
     }
-
-    // Apply the saved description if it exists in the database
     if (configMap['product_desc']) {
       const descEl = document.getElementById('displayProductDesc');
       if (descEl) descEl.textContent = configMap['product_desc'];
     }
-  } catch (err) {
-    console.error('Error loading text content', err);
-  }
-}
 
-// Run it when the page opens
-loadSavedText();
+  } catch (err) {
+    console.error('Error loading store configuration:', err);
+  }
+});

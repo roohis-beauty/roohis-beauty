@@ -1,32 +1,24 @@
 :root {
-    --text-color: #1a1a1a;
-    --accent-color: #c5a059;
-    html {
-    color-scheme: light;
-    --site-bg: #fdfbf7;        /* The cream background */
-    --site-text: #1a1a1a;      /* Primary text color */
-    --nav-bg: #fdfbf7;         /* Navbar background */
+    --site-bg: #fdfbf7;         /* The cream background */
+    --site-text: #1a1a1a;       /* Primary text color */
+    --nav-bg: #fdfbf7;          /* Navbar background */
 
     --main-bg: #fdfbf7;
-  --accent-bg: #ffffff;
-  --main-text: #1a1a1a;
-  --text-hover: #d4a373;
-}
+    --accent-bg: #ffffff;
+    --main-text: #1a1a1a;
+    --text-hover: #d4a373;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* Living, breathing moving gradient background */
 body {
-    /* background: linear-gradient(120deg, #fdfbf7, #f4efe6, #faf6ee, #f1ece1); */
     background-size: 400% 400%;
     animation: gradientShift 18s ease infinite;
-    /* color: var(--text-color); */
     font-family: 'Plus Jakarta Sans', sans-serif;
     overflow-x: hidden;
-
-background-color: var(--main-bg) !important;
-    color: var(--site-text);
+    background-color: var(--main-bg) !important;
+    color: var(--main-text);
     transition: background-color 0.3s ease; /* Smooth transition when changed */
 }
 
@@ -46,10 +38,8 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 35px 6%;
-    /* background: transparent; */
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 1000;
-
     background-color: var(--accent-bg);
 }
 
@@ -68,7 +58,7 @@ nav.scrolled {
     letter-spacing: 2px;
     font-weight: 500;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--main-text);
     opacity: 0;
     transform: translateY(-8px);
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -92,12 +82,12 @@ nav.scrolled .nav-logo {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--main-text);
     transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: var(--accent-bg);
+    color: var(--text-hover) !important;
 }
 
 /* Hero Section */
@@ -117,20 +107,21 @@ nav.scrolled .nav-logo {
     font-weight: 400;
     letter-spacing: 6px;
     text-align: center;
-    color: var(--text-color);
+    color: var(--main-text);
     will-change: transform, opacity;
     transition: transform 0.1s ease-out, opacity 0.1s ease-out;
 }
+
 @media (max-width: 768px) {
     nav {
         padding: 20px 4%;
     }
     .nav-links {
-        gap: 15px; /* Shrink space between links */
-        font-size: 11px; /* Make text slightly smaller */
+        gap: 15px;
+        font-size: 11px;
     }
     .nav-logo {
-        font-size: 18px; /* Shrink logo so it doesn't overlap */
+        font-size: 18px;
     }
 }
 
@@ -157,14 +148,14 @@ nav.scrolled .nav-logo {
     z-index: 1;
     user-select: none;
     text-align: center;
-    filter: blur(2.5px); /* Soft, cinematic background blur that stays steady */
+    filter: blur(2.5px);
 }
 
 /* Stable floating PNG wrapper */
 .floating-wrapper {
     position: relative;
     z-index: 2;
-    margin-top: 20px; /* Slightly lower to avoid overlapping with the background text */
+    margin-top: 20px;
     width: 280px;
     max-width: 40vw;
 }
@@ -173,38 +164,32 @@ nav.scrolled .nav-logo {
     width: 100%;
     height: auto;
     object-fit: contain;
-filter: drop-shadow(50px 50px 40px rgba(0, 0, 0, 0.30));}
+    filter: drop-shadow(50px 50px 40px rgba(0, 0, 0, 0.30));
+}
+
 /* Mobile adjustments for the floating product canvas */
 @media (max-width: 768px) {
     .floating-product-section {
-        height: 80vh; /* Slightly shorter height on mobile so it fits better */
+        height: 80vh;
         padding: 0 15px;
     }
 
-    /* Make background text bolder and more apparent, yet still soft */
     .background-text {
-        font-size: clamp(70px, 20vw, 120px); /* Adjusted size for mobile screens */
-        color: rgba(0, 0, 0, 0.07);         /* Slightly darker so it's readable */
+        font-size: clamp(70px, 20vw, 120px);
+        color: rgba(0, 0, 0, 0.07);
         letter-spacing: 4px;
     }
 
-    /* Make the cleanser PNG much bolder and larger on mobile */
     .floating-wrapper {
-        width: 220px; /* Forces a larger, prominent footprint */
-        max-width: 75vw; /* Takes up more of the mobile width */
+        width: 220px;
+        max-width: 75vw;
     }
 }
-.hero-section, 
-.scroll-animation-area, 
-.navbar, 
-.footer {
-  background-color: var(--accent-bg) !important;}
 
-  body, p, h1, h2, a {
-  color: var(--main-text);
+body, p, h1, h2, a {
+    color: var(--main-text);
 }
 
-/* Hover effects */
 a:hover, .btn:hover, .nav-link:hover {
-  color: var(--text-hover) !important;
+    color: var(--text-hover) !important;
 }

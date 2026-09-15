@@ -14,6 +14,12 @@ export default async function handler(req, res) {
       config[row.key] = row.value;
     });
 
+    // Provide camelCase aliases for front-end JS compatibility
+    if (config.background_color) config.backgroundColor = config.background_color;
+    if (config.secondary_color) config.secondaryColor = config.secondary_color;
+    if (config.text_color) config.textColor = config.text_color;
+    if (config.text_hover_color) config.textHoverColor = config.text_hover_color;
+
     return res.status(200).json(config);
   } catch (error) {
     console.error('get-config error:', error);
