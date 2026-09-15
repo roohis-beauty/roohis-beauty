@@ -73,3 +73,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error loading store theme config:', err);
   }
 });
+async function loadDynamicText() {
+  try {
+    const res = await fetch('/api/get-config'); 
+    if (!res.ok) return;
+    const data = await res.json(); 
+
+    const configMap = {};
+    data.forEach(item => { configMap[item.key] = item.value; });
+
+    if (configMap['product_title']) {
+      document.getElementById('displayProductTitle').textContent = configMap['product_title'];
+    }
+    if (configMap['product_desc']) {
+      document.getElementById('displayProductDesc').textContent = configMap['product_desc'];
+    }
+  } catch (e) {
+    console.log('Using default static text');
+  }
+}
+
+loadDynamicText();

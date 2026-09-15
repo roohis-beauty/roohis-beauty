@@ -326,3 +326,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+document.getElementById('saveTextBtn').addEventListener('click', async () => {
+  const title = document.getElementById('productTitleInput').value;
+  const desc = document.getElementById('productDescInput').value;
+
+  try {
+    // Save title
+    await fetch('/api/update-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'product_title', value: title })
+    });
+    
+    // Save description
+    await fetch('/api/update-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'product_desc', value: desc })
+    });
+
+    alert('Product text saved successfully!');
+  } catch (err) {
+    console.error('Failed to save text', err);
+    alert('Error saving text.');
+  }
+});
