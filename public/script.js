@@ -136,8 +136,21 @@ async function loadSliderConfig() {
         const config = await res.json();
 
         if (config.slider_images) {
-            const urls = JSON.parse(config.slider_images);
-            setupSlider(urls);
+            let urls = config.slider_images;
+            
+            // Safely parse JSON if it comes back as a raw string
+            if (typeof urls === 'string') {
+                try {
+                    urls = JSON.parse(urls);
+                } catch (e) {
+                    console.error('Failed to parse slider_images JSON string:', e);
+                }
+            }
+
+            // Ensure we pass a valid array to setupSlider
+            if (Array.isArray(urls) && urls.length > 0) {
+                setupSlider(urls);
+            }
         }
     } catch (err) {
         console.error('Error loading slider images:', err);
