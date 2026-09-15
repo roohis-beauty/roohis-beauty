@@ -6,6 +6,9 @@ const db = createClient({
 });
 
 export default async function handler(req, res) {
+  // Disable Vercel CDN and browser caching completely so site updates instantly
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
   try {
     const result = await db.execute('SELECT key, value FROM store_config');
     const config = {};
@@ -14,11 +17,11 @@ export default async function handler(req, res) {
       config[row.key] = row.value;
     });
 
-    // Provide camelCase aliases for front-end JS compatibility
-    if (config.background_color) config.backgroundColor = config.background_color;
-    if (config.secondary_color) config.secondaryColor = config.secondary_color;
-    if (config.text_color) config.textColor = config.text_color;
-    if (config.text_hover_color) config.textHoverColor = config.text_hover_color;
+    // Handle snake_case vs camelCase key matching across entire app
+    config.backgroundColor = config.backgroundColor || config.background_color;
+    config.secondaryColor = config.secondaryColor || config.secondary_color;
+    config.textColor = config.textColor || config.text_color;
+    config.textHoverColor = config.textHoverColor || config.text_hover_color;
 
     return res.status(200).json(config);
   } catch (error) {
