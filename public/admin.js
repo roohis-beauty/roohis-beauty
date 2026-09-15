@@ -278,4 +278,51 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error saving text.');
         }
     });
+    const sliderFileInput = document.getElementById('sliderFileInput');
+const uploadSliderBtn = document.getElementById('uploadSliderBtn');
+
+uploadSliderBtn?.addEventListener('click', async () => {
+    const files = sliderFileInput?.files;
+    if (!files || files.length === 0) {
+        alert('Please pick at least one image from your gallery.');
+        return;
+    }
+
+    const uploadedUrls = [];
+
+    for (let file of files) {
+        try {
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'x-filename': file.name },
+                body: file
+            });
+            const blobData = await uploadRes.json();
+
+            if (blobData.url) {
+                uploadedUrls.push(blobData.url);
+            }
+        } catch (err) {
+            console.error('Error uploading file:', err);
+        }
+    }
+
+    if (uploadedUrls.length > 0) {
+        try {
+            const res = await fetch('/api/update-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    slider_images: JSON.stringify(uploadedUrls)
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Images uploaded and saved to slider successfully!');
+            }
+        } catch (err) {
+            console.error('Failed to save slider URLs to DB:', err);
+        }
+    }
+});
 });

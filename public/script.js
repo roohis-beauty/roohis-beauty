@@ -90,3 +90,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error loading store configuration:', err);
   }
 });
+
+let currentSlide = 0;
+let totalSlides = 0;
+
+function setupSlider(imageUrls) {
+    const track = document.getElementById('sliderTrack');
+    if (!track || !imageUrls || imageUrls.length === 0) return;
+
+    track.innerHTML = '';
+    imageUrls.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        track.appendChild(img);
+    });
+
+    totalSlides = imageUrls.length;
+
+    const prevBtn = document.getElementById('prevSlideBtn');
+    const nextBtn = document.getElementById('nextSlideBtn');
+
+    prevBtn?.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSliderPosition();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSliderPosition();
+    });
+}
+
+function updateSliderPosition() {
+    const track = document.getElementById('sliderTrack');
+    if (track) {
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+}
+
+// Load slider images alongside storefront config
+async function loadSliderConfig() {
+    try {
+        const res = await fetch('/api/get-config');
+        if (!res.ok) return;
+        const config = await res.json();
+
+        if (config.slider_images) {
+            const urls = JSON.parse(config.slider_images);
+            setupSlider(urls);
+        }
+    } catch (err) {
+        console.error('Error loading slider images:', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadSliderConfig);
