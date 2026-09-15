@@ -40,6 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveTextBtn = document.getElementById('saveTextBtn');
 
     // -----------------------------------------------------------------
+    // Helper Function: Single Config Updater
+    // -----------------------------------------------------------------
+    async function saveSingleConfig(key, value) {
+        const res = await fetch('/api/update-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, value })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || `Failed to update ${key}`);
+        }
+        return data;
+    }
+
+    // -----------------------------------------------------------------
     // 2. View Routing & Auth Session Check
     // -----------------------------------------------------------------
     if (sessionStorage.getItem('adminUser')) {
@@ -222,33 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save Theme Colors
     saveConfigBtn?.addEventListener('click', async () => {
         try {
-            const res = await fetch('/api/update-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    backgroundColor: bgColorPicker ? bgColorPicker.value : null,
-                    secondaryColor: secondaryColorPicker ? secondaryColorPicker.value : null,
-                    textColor: textColorPicker ? textColorPicker.value : null,
-                    textHoverColor: textHoverColorPicker ? textHoverColorPicker.value : null
-                })
-            });
+            if (bgColorPicker) await saveSingleConfig('backgroundColor', bgColorPicker.value);
+            if (secondaryColorPicker) await saveSingleConfig('secondaryColor', secondaryColorPicker.value);
+            if (textColorPicker) await saveSingleConfig('textColor', textColorPicker.value);
+            if (textHoverColorPicker) await saveSingleConfig('textHoverColor', textHoverColorPicker.value);
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error('Server error response:', errorText);
-                alert('Server error (500). Check console/Vercel logs.');
-                return;
-            }
-
-            const data = await res.json();
-            if (data.success) {
-                alert('Theme colors saved successfully!');
-            } else {
-                alert('Failed to save settings: ' + (data.error || 'Unknown error'));
-            }
+            alert('Theme colors saved successfully!');
         } catch (err) {
             console.error('Error saving colors:', err);
-            alert('Failed to save settings.');
+            alert('Failed to save settings: ' + err.message);
         }
     });
 
@@ -258,83 +256,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const desc = productDescInput ? productDescInput.value : '';
 
         try {
-            const res = await fetch('/api/update-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_title: title,
-                    product_desc: desc
-                })
-            });
+            await saveSingleConfig('product_title', title);
+            await saveSingleConfig('product_desc', desc);
 
-            const data = await res.json();
-            if (data.success) {
-                alert('Product text saved successfully!');
-            } else {
-                alert('Failed to save text.');
-            }
+            alert('Product text saved successfully!');
         } catch (err) {
             console.error('Failed to save text:', err);
-            alert('Error saving text.');
+            alert('Error saving text: ' + err.message);
         }
     });
-   const sliderFileInput = document.getElementById('sliderFileInput');
-const uploadSliderBtn = document.getElementById('uploadSliderBtn');
 
-uploadSliderBtn?.addEventListener('click', async () => {
-    const files = sliderFileInput?.files;
-    if (!files || files.length === 0) {
-        alert('Please pick at least one image from your gallery.');
-        return;
-    }
+    // Upload Slider Images
+    const sliderFileInput = document.getElementById('sliderFileInput');
+    const uploadSliderBtn = document.getElementById('uploadSliderBtn');
 
-    uploadSliderBtn.disabled = true;
-    uploadSliderBtn.innerText = 'Uploading...';
-
-    const uploadedUrls = [];
-
-    try {
-        for (let file of files) {
-            const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { 'x-filename': file.name },
-                body: file
-            });
-
-            if (!uploadRes.ok) {
-                const errText = await uploadRes.text();
-                throw new Error(`Upload failed: ${uploadRes.status} - ${errText}`);
-            }
-
-            const blobData = await uploadRes.json();
-            if (blobData.url) {
-                uploadedUrls.push(blobData.url);
-            }
+    uploadSliderBtn?.addEventListener('click', async () => {
+        const files = sliderFileInput?.files;
+        if (!files || files.length === 0) {
+            alert('Please pick at least one image from your gallery.');
+            return;
         }
 
-        if (uploadedUrls.length > 0) {
-            const res = await fetch('/api/update-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    key: 'slider_images',
-                    value: JSON.stringify(uploadedUrls)
-                })
-            });
+        uploadSliderBtn.disabled = true;
+        uploadSliderBtn.innerText = 'Uploading...';
 
-            const data = await res.json();
-            if (res.ok && data.success) {
+        const uploadedUrls = [];
+
+        try {
+            for (let file of files) {
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'x-filename': file.name },
+                    body: file
+                });
+
+                if (!uploadRes.ok) {
+                    const errText = await uploadRes.text();
+                    throw new Error(`Upload failed: ${uploadRes.status} - ${errText}`);
+                }
+
+                const blobData = await uploadRes.json();
+                if (blobData.url) {
+                    uploadedUrls.push(blobData.url);
+                }
+            }
+
+            if (uploadedUrls.length > 0) {
+                await saveSingleConfig('slider_images', JSON.stringify(uploadedUrls));
                 alert('Images uploaded and saved to slider successfully!');
-            } else {
-                alert('Database update failed: ' + (data.error || 'Unknown error'));
             }
+        } catch (err) {
+            console.error('Slider Upload Error:', err);
+            alert('Upload Error: ' + err.message);
+        } finally {
+            uploadSliderBtn.disabled = false;
+            uploadSliderBtn.innerText = 'Upload Selected Images';
         }
-    } catch (err) {
-        console.error('Slider Upload Error:', err);
-        alert('Upload Error: ' + err.message);
-    } finally {
-        uploadSliderBtn.disabled = false;
-        uploadSliderBtn.innerText = 'Upload Selected Images';
-    }
-});
+    });
 });
