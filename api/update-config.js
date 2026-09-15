@@ -44,3 +44,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: error.message });
   }
 }
+const { key, value } = await req.json();
+
+await client.execute({
+  sql: "INSERT INTO site_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?",
+  args: [key, value, value]
+});

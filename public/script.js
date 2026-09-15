@@ -94,3 +94,34 @@ async function loadDynamicText() {
 }
 
 loadDynamicText();
+
+async function loadSavedText() {
+  try {
+    const res = await fetch('/api/get-config');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Map through the database rows
+    const configMap = {};
+    if (Array.isArray(data)) {
+      data.forEach(item => { configMap[item.key] = item.value; });
+    }
+
+    // Apply the saved title if it exists in the database
+    if (configMap['product_title']) {
+      const titleEl = document.getElementById('displayProductTitle');
+      if (titleEl) titleEl.textContent = configMap['product_title'];
+    }
+
+    // Apply the saved description if it exists in the database
+    if (configMap['product_desc']) {
+      const descEl = document.getElementById('displayProductDesc');
+      if (descEl) descEl.textContent = configMap['product_desc'];
+    }
+  } catch (err) {
+    console.error('Error loading text content', err);
+  }
+}
+
+// Run it when the page opens
+loadSavedText();
