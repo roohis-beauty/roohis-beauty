@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (!url || !authToken) {
-    return res.status(500).json({ error: 'Database environment variables missing on Vercel.' });
+    return res.status(500).json({ error: 'Database environment variables missing.' });
   }
 
   try {
@@ -30,7 +30,6 @@ module.exports = async function handler(req, res) {
 
     const db = createClient({ url, authToken });
 
-    // Columns matching your Turso schema: short_description and long_description
     await db.execute({
       sql: `INSERT INTO products (title, price, category, short_description, long_description, image_url) 
             VALUES (?, ?, ?, ?, ?, ?)`,
