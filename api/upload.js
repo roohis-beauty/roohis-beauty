@@ -1,9 +1,10 @@
+// api/upload.js - Handles binary image uploads to Vercel Blob storage
+
 import { put } from '@vercel/blob';
 
-// Tell Vercel NOT to parse body into JSON/urlencoded so binary file stream passes cleanly
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Disables body parsing so raw binary stream can be read directly
   },
 };
 
@@ -13,18 +14,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const filename = req.headers['x-filename'] || `upload-${Date.now()}.jpg`;
+    // Extract original filename from request header or generate a default one
+    const filename = req.headers['x-filename'] || `upload-${Date.now()}.png`;
 
-    // Stream raw file payload directly to Vercel Blob
+    // Upload the raw request body stream directly to Vercel Blob
     const blob = await put(filename, req, {
       access: 'public',
-      addRandomSuffix: true, // Prevents duplicate filename errors
-      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
-    return res.status(200).json({ url: blob.url });
+    // Returns { url: 'https://...' } expected by admin.js
+    return res.status(200).json(blob);
   } catch (error) {
     console.error('Upload error:', error);
-    return res.status(500).json({ error: error.message || 'Failed to upload image.' });
+    return res.status(500).json({ error: error.message || 'Image upload failed' });
   }
 }

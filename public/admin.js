@@ -314,3 +314,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+// Load categories into dropdown
+async function loadCategories() {
+    const catSelect = document.getElementById('prodCategorySelect');
+    if (!catSelect) return;
+    try {
+        const res = await fetch('/api/categories');
+        const categories = await res.json();
+        catSelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    } catch(e) { console.error(e); }
+}
+
+// Add category handler
+document.getElementById('addNewCatBtn')?.addEventListener('click', async () => {
+    const newCat = prompt("Enter new category name:");
+    if (!newCat) return;
+    await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCat })
+    });
+    alert('Category created!');
+    loadCategories();
+});
+
+// Save WhatsApp Number
+document.getElementById('saveWhatsappBtn')?.addEventListener('click', async () => {
+    const num = document.getElementById('whatsappInput')?.value;
+    await saveSingleConfig('whatsapp_number', num);
+    alert('WhatsApp number saved!');
+});
+
+// Save Product Handler
+document.getElementById('saveProductBtn')?.addEventListener('click', async () => {
+    const title = document.getElementById('prodTitle')?.value;
+    const price = document.getElementById('prodPrice')?.value;
+    const category = document.getElementById('prodCategorySelect')?.value;
+    const short_desc = document.getElementById('prodShortDesc')?.value;
+    const long_desc = document.getElementById('prodLongDesc')?.value;
+    const fileInput = document.getElementById('prodImageInput');
+
+    if (!title || !price || !category) {
+        alert('Please fill out title, price, and category.');
+        return;
+    }
+
+    let image_url = '';
+    if (fileInput?.files[0]) {
+        const file = fileInput.files[0];
+        const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'x-filename': file.name },
+            body: file
+        });
+        const blobData = await uploadRes.json();
+        image_url = blobData.url || '';
+    }
+
+    const res = await fetch('/api/add-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, price, short_desc, long_desc, category, image_url })
+    });
+
+    if (res.ok) {
+        alert('Product added successfully!');
+        location.reload();
+    } else {
+        alert('Failed to save product.');
+    }
+});
+
+// Initialize
+loadCategories();

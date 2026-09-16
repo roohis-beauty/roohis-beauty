@@ -166,3 +166,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading store configuration:', err);
     }
 });
+async function loadStoreCategoriesAndProducts() {
+    const container = document.getElementById('dynamicCategoriesContainer');
+    if (!container) return;
+
+    try {
+        const [catRes, prodRes, configRes] = await Promise.all([
+            fetch('/api/categories'),
+            fetch('/api/get-products'),
+            fetch('/api/get-config')
+        ]);
+
+        const categories = await catRes.json();
+        const products = await prodRes.json();
+        const config = await configRes.json();
+
+        container.innerHTML = '';
+
+        // Add "All Products" section at bottom of categories list
+        const categoryList = [...categories, { id: 'all', name: 'All Products' }];
+
+        categoryList.forEach(cat => {
+            const catProducts = cat.name === 'All Products' 
+                ? products 
+                : products.filter(p => p.category === cat.name);
+
+            if (catProducts.length === 0) return;
+
+            const section = document.createElement('section');
+            section.className = 'category-section';
+
+            section.innerHTML = `
+                <div class="category-header-bar" style="background-color: var(--main-bg, ${config.backgroundColor || '#fdfbf7'});">
+                    <h2 class="category-title">${cat.name}</h2>
+                    <button class="see-all-btn" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'}); color: var(--main-text, #1a1a1a);">See All</button>
+                </div>
+                <div class="horizontal-cards-scroll">
+                    ${catProducts.map(p => `
+                        <a href="product.html?id=${p.id}" class="scroll-card">
+                            <div class="card-image-box" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'});">
+                                <img src="${p.image_url || 'media/cleanser.png'}" alt="${p.title}">
+                            </div>
+                            <h3>${p.title}</h3>
+                            <p class="card-price">${p.price} BDT</p>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(section);
+        });
+    } catch(e) { console.error('Error loading store data:', e); }
+}
+
+document.addEventListener('DOMContentLoaded', loadStoreCategoriesAndProducts);
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing slider logic here...
+
+    // Load Categories & Products
+    if (typeof loadStoreCategoriesAndProducts === 'function') {
+        loadStoreCategoriesAndProducts();
+    }
+});
