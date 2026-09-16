@@ -12,9 +12,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const filename = req.query.filename || `product-${Date.now()}.jpg`;
+    // Read filename from query string OR the x-filename header sent by admin.js
+    const filename = req.query.filename || req.headers['x-filename'] || `product-${Date.now()}.jpg`;
     
-    // Pass token explicitly to ensure authorization
     const blob = await put(filename, req, {
       access: 'public',
       token: token,
