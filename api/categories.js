@@ -1,11 +1,5 @@
 import { createClient } from '@libsql/client';
 
-// Initialize client outside handler to reuse connection across warm serverless invocations
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL || '',
-  authToken: process.env.TURSO_AUTH_TOKEN || '',
-});
-
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -20,24 +14,31 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method === 'GET') {
-    try {
-      const result = await db.execute('SELECT * FROM categories ORDER BY id ASC');
-      return res.status(200).json(result.rows || []);
-    } catch (e) {
-      console.error('GET /api/categories error:', e);
-      return res.status(500).json({ error: e.message || 'Failed to fetch categories' });
-    }
+  // Verify Environment Variables
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+
+  if (!url || !authToken) {
+    console.error('Turso environment variables missing!');
+    return res.status(500).json({ 
+      error: 'Database configuration missing. Check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN on Vercel.' 
+    });
   }
 
-  if (req.method === 'POST') {
-    try {
-      // Safely parse body if sent as raw string
+  try {
+    const db = createClient({ url, authToken });
+
+    if (req.method === 'GET') {
+      const result = await db.execute('SELECT * FROM categories ORDER BY id ASC');
+      return res.status(200).json(result.rows || []);
+    }
+
+    if (req.method === 'POST') {
       let body = req.body;
       if (typeof body === 'string') {
         try {
           body = JSON.parse(body);
-        } catch (err) {
+        } catch (e) {
           return res.status(400).json({ error: 'Invalid JSON payload' });
         }
       }
@@ -53,11 +54,11 @@ export default async function handler(req, res) {
       });
 
       return res.status(200).json({ success: true });
-    } catch (e) {
-      console.error('POST /api/categories error:', e);
-      return res.status(500).json({ error: e.message || 'Failed to create category' });
     }
-  }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (err) {
+    console.error('Database query error:', err);
+    return res.status(500).json({ error: err.message || 'Database transaction failed' });
+  }
 }
