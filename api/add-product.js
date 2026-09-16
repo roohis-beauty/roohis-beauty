@@ -18,10 +18,10 @@ module.exports = async function handler(req, res) {
       try { body = JSON.parse(body); } catch (e) {}
     }
 
-    const { title, price, category, shortDescription, longDescription, imageUrl } = body || {};
+    const { title, price, category, short_desc, long_desc, image_url } = body || {};
     const db = createClient({ url, authToken });
 
-    // Force create a brand new clean table to avoid any legacy schema conflicts
+    // Ensure the table exists with the correct columns
     await db.execute(`
       CREATE TABLE IF NOT EXISTS store_products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,9 +42,9 @@ module.exports = async function handler(req, res) {
         String(title || ''), 
         String(price || ''), 
         String(category || 'General'), 
-        String(shortDescription || ''), 
-        String(longDescription || ''), 
-        String(imageUrl || '')
+        String(short_desc || ''), 
+        String(long_desc || ''), 
+        String(image_url || '')
       ]
     });
 
