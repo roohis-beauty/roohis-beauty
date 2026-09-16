@@ -1,28 +1,51 @@
-import { createClient } from '@libsql/client';
+const { createClient } = require('@libsql/client');
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+
+  if (!url || !authToken) {
+    return res.status(500).json({ error: 'Database credentials missing.' });
+  }
 
   try {
-    const { title, price, short_desc, long_desc, image_url, category } = req.body;
-
-    if (!title || !price || !category) {
-      return res.status(400).json({ error: 'Title, price, and category are required.' });
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON payload' });
+      }
     }
 
-    const db = createClient({
-      url: process.env.TURSO_DATABASE_URL,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    });
+    const { title, price, category, shortDescription, longDescription, imageUrl } = body || {};
+
+    if (!title || !price) {
+      return res.status(400).json({ error: 'Title and Price are required fields.' });
+    }
+
+    const db = createClient({ url, authToken });
 
     await db.execute({
-      sql: `INSERT INTO products (title, price, short_desc, long_desc, image_url, category) 
+      sql: `INSERT INTO products (title, price, category, short_description, long_description, image_url) 
             VALUES (?, ?, ?, ?, ?, ?)`,
-      args: [title, price, short_desc || '', long_desc || '', image_url || '', category],
+      args: [
+        title, 
+        parseFloat(price) || 0, 
+        category || '', 
+        shortDescription || '', 
+        longDescription || '', 
+        imageUrl || ''
+      ]
     });
 
     return res.status(200).json({ success: true });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
+  } catch (error) {
+    console.error('Add Product Error:', error);
+    return res.status(500).json({ error: error.message || 'Database error adding product' });
   }
-}
+};

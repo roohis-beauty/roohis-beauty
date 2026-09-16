@@ -1,4 +1,4 @@
-const { handleUpload } = require('@vercel/blob/client');
+const { put } = require('@vercel/blob');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,23 +6,20 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const jsonResponse = await handleUpload({
-      body: req.body,
-      request: req,
-      onBeforeGenerateToken: async (pathname) => {
-        return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp'],
-          tokenPayload: JSON.stringify({}),
-        };
-      },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        console.log('Blob uploaded successfully:', blob.url);
-      },
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      return res.status(500).json({ error: 'BLOB_READ_WRITE_TOKEN environment variable missing on Vercel.' });
+    }
+
+    const filename = req.query.filename || `upload-${Date.now()}.jpg`;
+    const blob = await put(filename, req, {
+      access: 'public',
+      token: token
     });
 
-    return res.status(200).json(jsonResponse);
+    return res.status(200).json(blob);
   } catch (error) {
     console.error('Upload handler error:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message || 'Upload failed' });
   }
 };
