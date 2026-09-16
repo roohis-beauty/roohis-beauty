@@ -30,23 +30,23 @@ module.exports = async function handler(req, res) {
 
     const db = createClient({ url, authToken });
 
-    // Using exact database column names: short_desc and long_desc
+    // Columns matching your Turso schema: short_description and long_description
     await db.execute({
-      sql: `INSERT INTO products (title, price, category, short_desc, long_desc, image_url) 
+      sql: `INSERT INTO products (title, price, category, short_description, long_description, image_url) 
             VALUES (?, ?, ?, ?, ?, ?)`,
       args: [
-        title, 
-        String(price), 
-        category || 'General', 
-        shortDescription || '', 
-        longDescription || '', 
-        imageUrl || ''
+        String(title), 
+        parseFloat(price) || 0, 
+        String(category || 'General'), 
+        String(shortDescription || ''), 
+        String(longDescription || ''), 
+        String(imageUrl || '')
       ]
     });
 
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Add Product API Error:', error);
-    return res.status(500).json({ error: error.message || 'Failed to save product to database' });
+    return res.status(500).json({ error: error.message || 'Failed to save product' });
   }
 };
