@@ -76,7 +76,6 @@ function setupSlider(imageUrls) {
         };
     }
 
-    // Automatically transition slides if there is more than 1 image
     if (totalSlides > 1) {
         startAutoSlide();
     }
@@ -94,78 +93,14 @@ function startAutoSlide() {
     autoSlideInterval = setInterval(() => {
         currentSlide = (currentSlide + 1) % totalSlides;
         updateSliderPosition();
-    }, 3500); // Transitions every 3.5 seconds
+    }, 3500);
 }
 
 function restartAutoSlide() {
     startAutoSlide();
 }
 
-// 4. Single DOMContentLoaded listener for Theme, Dynamic Text, and Slider
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const res = await fetch('/api/get-config');
-        if (!res.ok) return;
-
-        const rawData = await res.json();
-
-        // Standardize output to key-value map
-        const configMap = {};
-        if (Array.isArray(rawData)) {
-            rawData.forEach(item => { configMap[item.key] = item.value; });
-        } else {
-            Object.assign(configMap, rawData);
-        }
-
-        // Check both camelCase and snake_case for CSS variables
-        const bgColor = configMap.backgroundColor || configMap.background_color;
-        const secondaryColor = configMap.secondaryColor || configMap.secondary_color;
-        const textColor = configMap.textColor || configMap.text_color;
-        const textHoverColor = configMap.textHoverColor || configMap.text_hover_color;
-
-        // Apply Theme Colors
-        if (bgColor) {
-            document.documentElement.style.setProperty('--main-bg', bgColor);
-            document.body.style.backgroundColor = 'var(--main-bg)';
-        }
-        if (secondaryColor) {
-            document.documentElement.style.setProperty('--accent-bg', secondaryColor);
-        }
-        if (textColor) {
-            document.documentElement.style.setProperty('--main-text', textColor);
-        }
-        if (textHoverColor) {
-            document.documentElement.style.setProperty('--text-hover', textHoverColor);
-        }
-
-        // Apply Dynamic Product Text using matching IDs from index.html
-        if (configMap['product_title']) {
-            const titleEl = document.getElementById('productTitleDisplay');
-            if (titleEl) titleEl.textContent = configMap['product_title'];
-        }
-        if (configMap['product_desc']) {
-            const descEl = document.getElementById('productDescDisplay');
-            if (descEl) descEl.textContent = configMap['product_desc'];
-        }
-
-        // Render Slider Images safely
-        if (configMap.slider_images) {
-            let urls = configMap.slider_images;
-            if (typeof urls === 'string') {
-                try {
-                    urls = JSON.parse(urls);
-                } catch (e) {
-                    console.error('Failed to parse slider JSON:', e);
-                }
-            }
-            if (Array.isArray(urls) && urls.length > 0) {
-                setupSlider(urls);
-            }
-        }
-    } catch (err) {
-        console.error('Error loading store configuration:', err);
-    }
-});
+// 4. Load Categories & Products Grid
 async function loadStoreCategoriesAndProducts() {
     const container = document.getElementById('dynamicCategoriesContainer');
     if (!container) return;
@@ -183,7 +118,6 @@ async function loadStoreCategoriesAndProducts() {
 
         container.innerHTML = '';
 
-        // Add "All Products" section at bottom of categories list
         const categoryList = [...categories, { id: 'all', name: 'All Products' }];
 
         categoryList.forEach(cat => {
@@ -215,15 +149,61 @@ async function loadStoreCategoriesAndProducts() {
             `;
             container.appendChild(section);
         });
-    } catch(e) { console.error('Error loading store data:', e); }
+    } catch(e) { 
+        console.error('Error loading store data:', e); 
+    }
 }
 
-document.addEventListener('DOMContentLoaded', loadStoreCategoriesAndProducts);
-document.addEventListener('DOMContentLoaded', () => {
-    // Existing slider logic here...
+// 5. Unified DOMContentLoaded Initialization
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load Store Configuration, Theme & Slider
+    try {
+        const res = await fetch('/api/get-config');
+        if (res.ok) {
+            const rawData = await res.json();
+            const configMap = {};
+            if (Array.isArray(rawData)) {
+                rawData.forEach(item => { configMap[item.key] = item.value; });
+            } else {
+                Object.assign(configMap, rawData);
+            }
 
-    // Load Categories & Products
-    if (typeof loadStoreCategoriesAndProducts === 'function') {
-        loadStoreCategoriesAndProducts();
+            const bgColor = configMap.backgroundColor || configMap.background_color;
+            const secondaryColor = configMap.secondaryColor || configMap.secondary_color;
+            const textColor = configMap.textColor || configMap.text_color;
+            const textHoverColor = configMap.textHoverColor || configMap.text_hover_color;
+
+            if (bgColor) {
+                document.documentElement.style.setProperty('--main-bg', bgColor);
+                document.body.style.backgroundColor = 'var(--main-bg)';
+            }
+            if (secondaryColor) document.documentElement.style.setProperty('--accent-bg', secondaryColor);
+            if (textColor) document.documentElement.style.setProperty('--main-text', textColor);
+            if (textHoverColor) document.documentElement.style.setProperty('--text-hover', textHoverColor);
+
+            if (configMap['product_title']) {
+                const titleEl = document.getElementById('productTitleDisplay');
+                if (titleEl) titleEl.textContent = configMap['product_title'];
+            }
+            if (configMap['product_desc']) {
+                const descEl = document.getElementById('productDescDisplay');
+                if (descEl) descEl.textContent = configMap['product_desc'];
+            }
+
+            if (configMap.slider_images) {
+                let urls = configMap.slider_images;
+                if (typeof urls === 'string') {
+                    try { urls = JSON.parse(urls); } catch (e) {}
+                }
+                if (Array.isArray(urls) && urls.length > 0) {
+                    setupSlider(urls);
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Error loading config:', err);
     }
+
+    // Load Products & Categories
+    loadStoreCategoriesAndProducts();
 });
