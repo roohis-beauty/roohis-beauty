@@ -7,7 +7,7 @@ export default async function handler(req, res) {
       authToken: process.env.TURSO_AUTH_TOKEN,
     });
 
-    const result = await db.execute('SELECT * FROM products ORDER BY id DESC');
+const result = await db.execute('SELECT * FROM store_products ORDER BY id DESC');
     return res.status(200).json(result.rows);
   } catch (e) {
     return res.status(500).json({ error: e.message });
