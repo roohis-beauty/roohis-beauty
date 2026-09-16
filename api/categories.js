@@ -1,7 +1,6 @@
-import { createClient } from '@libsql/client';
+const { createClient } = require('@libsql/client');
 
-export default async function handler(req, res) {
-  // CORS Headers
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -14,15 +13,11 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Verify Environment Variables
   const url = process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (!url || !authToken) {
-    console.error('Turso environment variables missing!');
-    return res.status(500).json({ 
-      error: 'Database configuration missing. Check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN on Vercel.' 
-    });
+    return res.status(500).json({ error: 'Database environment variables missing on Vercel.' });
   }
 
   try {
@@ -58,7 +53,7 @@ export default async function handler(req, res) {
 
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (err) {
-    console.error('Database query error:', err);
-    return res.status(500).json({ error: err.message || 'Database transaction failed' });
+    console.error('Categories API Error:', err);
+    return res.status(500).json({ error: err.message || 'Database query failed' });
   }
-}
+};
