@@ -1,29 +1,61 @@
 // admin.js - Storefront Admin Portal Logic
 
+// Helper Function: Single Config Updater (Placed globally so all handlers can access it)
+async function saveSingleConfig(key, value) {
+    const res = await fetch('/api/update-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+        throw new Error(data.error || `Failed to update ${key}`);
+    }
+    return data;
+}
+
+// Load categories into dropdown
+async function loadCategories() {
+    const catSelect = document.getElementById('prodCategorySelect');
+    if (!catSelect) return;
+
+    try {
+        const res = await fetch('/api/categories');
+        if (!res.ok) throw new Error('Failed to fetch categories');
+        
+        const categories = await res.json();
+        
+        if (Array.isArray(categories) && categories.length > 0) {
+            catSelect.innerHTML = categories
+                .map(c => `<option value="${c.name}">${c.name}</option>`)
+                .join('');
+        } else {
+            catSelect.innerHTML = `<option value="">No categories found</option>`;
+        }
+    } catch (e) {
+        console.error('Error loading categories:', e);
+        catSelect.innerHTML = `<option value="">Error loading categories</option>`;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
     // 1. DOM Elements
     // -----------------------------------------------------------------
-    // Views
     const registerView = document.getElementById('registerView');
     const loginView = document.getElementById('loginView');
     const dashboardView = document.getElementById('dashboardView');
 
-    // Navigation Links
     const goToLogin = document.getElementById('goToLogin');
     const goToRegister = document.getElementById('goToRegister');
 
-    // Auth Controls
     const registerBtn = document.getElementById('registerBtn');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    const updatePasswordBtn = document.getElementById('updatePasswordBtn');
     const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
-    // Theme & Aesthetic Controls
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
-    // Color Pickers & Displays
     const bgColorPicker = document.getElementById('bgColorPicker');
     const hexDisplay = document.getElementById('hexCodeDisplay');
     const secondaryColorPicker = document.getElementById('secondaryColorPicker');
@@ -34,26 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const textHoverHexDisplay = document.getElementById('textHoverHexDisplay');
     const saveConfigBtn = document.getElementById('saveConfigBtn');
 
-    // Product Text Controls
     const productTitleInput = document.getElementById('productTitleInput');
     const productDescInput = document.getElementById('productDescInput');
     const saveTextBtn = document.getElementById('saveTextBtn');
-
-    // -----------------------------------------------------------------
-    // Helper Function: Single Config Updater
-    // -----------------------------------------------------------------
-    async function saveSingleConfig(key, value) {
-        const res = await fetch('/api/update-config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key, value })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-            throw new Error(data.error || `Failed to update ${key}`);
-        }
-        return data;
-    }
 
     // -----------------------------------------------------------------
     // 2. View Routing & Auth Session Check
@@ -77,12 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loginView?.classList.add('hidden');
         dashboardView?.classList.remove('hidden');
         loadCurrentConfig();
+        loadCategories(); // Fetch categories when dashboard opens
     }
 
     // -----------------------------------------------------------------
     // 3. Authentication Actions
     // -----------------------------------------------------------------
-    // Register
     registerBtn?.addEventListener('click', async () => {
         const email = document.getElementById('regEmail')?.value;
         const password = document.getElementById('regPassword')?.value;
@@ -111,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Login
     loginBtn?.addEventListener('click', async () => {
         const email = document.getElementById('loginEmail')?.value;
         const password = document.getElementById('loginPassword')?.value;
@@ -134,14 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Logout
     logoutBtn?.addEventListener('click', () => {
         sessionStorage.removeItem('adminUser');
         dashboardView?.classList.add('hidden');
         loginView?.classList.remove('hidden');
     });
 
-    // Delete Account
     deleteAccountBtn?.addEventListener('click', async () => {
         const confirmDelete = confirm('Are you sure you want to delete this account? This will un-assign current owner access and allow a new owner to register.');
         if (!confirmDelete) return;
@@ -205,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const config = await res.json();
 
-            // Populate Colors
             if (config.backgroundColor && bgColorPicker) {
                 bgColorPicker.value = config.backgroundColor;
                 if (hexDisplay) hexDisplay.textContent = config.backgroundColor;
@@ -223,19 +234,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (textHoverHexDisplay) textHoverHexDisplay.textContent = config.textHoverColor;
             }
 
-            // Populate Product Text
             if (config.product_title && productTitleInput) {
                 productTitleInput.value = config.product_title;
             }
             if (config.product_desc && productDescInput) {
                 productDescInput.value = config.product_desc;
             }
+            if (config.whatsapp_number && document.getElementById('whatsappInput')) {
+                document.getElementById('whatsappInput').value = config.whatsapp_number;
+            }
         } catch (err) {
             console.error('Error fetching current config:', err);
         }
     }
 
-    // Save Theme Colors
     saveConfigBtn?.addEventListener('click', async () => {
         try {
             if (bgColorPicker) await saveSingleConfig('backgroundColor', bgColorPicker.value);
@@ -250,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Save Product Title and Description
     saveTextBtn?.addEventListener('click', async () => {
         const title = productTitleInput ? productTitleInput.value : '';
         const desc = productDescInput ? productDescInput.value : '';
@@ -313,77 +324,80 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadSliderBtn.innerText = 'Upload Selected Images';
         }
     });
-});
-// Load categories into dropdown
-async function loadCategories() {
-    const catSelect = document.getElementById('prodCategorySelect');
-    if (!catSelect) return;
-    try {
-        const res = await fetch('/api/categories');
-        const categories = await res.json();
-        catSelect.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    } catch(e) { console.error(e); }
-}
 
-// Add category handler
-document.getElementById('addNewCatBtn')?.addEventListener('click', async () => {
-    const newCat = prompt("Enter new category name:");
-    if (!newCat) return;
-    await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newCat })
+    // Add category handler
+    document.getElementById('addNewCatBtn')?.addEventListener('click', async () => {
+        const newCat = prompt("Enter new category name:");
+        if (!newCat || !newCat.trim()) return;
+
+        try {
+            const res = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newCat.trim() })
+            });
+
+            if (res.ok) {
+                alert('Category created!');
+                await loadCategories();
+                const catSelect = document.getElementById('prodCategorySelect');
+                if (catSelect) catSelect.value = newCat.trim();
+            } else {
+                alert('Failed to add category.');
+            }
+        } catch (e) {
+            console.error('Category creation error:', e);
+        }
     });
-    alert('Category created!');
-    loadCategories();
-});
 
-// Save WhatsApp Number
-document.getElementById('saveWhatsappBtn')?.addEventListener('click', async () => {
-    const num = document.getElementById('whatsappInput')?.value;
-    await saveSingleConfig('whatsapp_number', num);
-    alert('WhatsApp number saved!');
-});
+    // Save WhatsApp Number
+    document.getElementById('saveWhatsappBtn')?.addEventListener('click', async () => {
+        const num = document.getElementById('whatsappInput')?.value;
+        try {
+            await saveSingleConfig('whatsapp_number', num);
+            alert('WhatsApp number saved!');
+        } catch (e) {
+            alert('Error saving WhatsApp number: ' + e.message);
+        }
+    });
 
-// Save Product Handler
-document.getElementById('saveProductBtn')?.addEventListener('click', async () => {
-    const title = document.getElementById('prodTitle')?.value;
-    const price = document.getElementById('prodPrice')?.value;
-    const category = document.getElementById('prodCategorySelect')?.value;
-    const short_desc = document.getElementById('prodShortDesc')?.value;
-    const long_desc = document.getElementById('prodLongDesc')?.value;
-    const fileInput = document.getElementById('prodImageInput');
+    // Save Product Handler
+    document.getElementById('saveProductBtn')?.addEventListener('click', async () => {
+        const title = document.getElementById('prodTitle')?.value;
+        const price = document.getElementById('prodPrice')?.value;
+        const category = document.getElementById('prodCategorySelect')?.value;
+        const short_desc = document.getElementById('prodShortDesc')?.value;
+        const long_desc = document.getElementById('prodLongDesc')?.value;
+        const fileInput = document.getElementById('prodImageInput');
 
-    if (!title || !price || !category) {
-        alert('Please fill out title, price, and category.');
-        return;
-    }
+        if (!title || !price || !category) {
+            alert('Please fill out title, price, and category.');
+            return;
+        }
 
-    let image_url = '';
-    if (fileInput?.files[0]) {
-        const file = fileInput.files[0];
-        const uploadRes = await fetch('/api/upload', {
+        let image_url = '';
+        if (fileInput?.files[0]) {
+            const file = fileInput.files[0];
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'x-filename': file.name },
+                body: file
+            });
+            const blobData = await uploadRes.json();
+            image_url = blobData.url || '';
+        }
+
+        const res = await fetch('/api/add-product', {
             method: 'POST',
-            headers: { 'x-filename': file.name },
-            body: file
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, short_desc, long_desc, category, image_url })
         });
-        const blobData = await uploadRes.json();
-        image_url = blobData.url || '';
-    }
 
-    const res = await fetch('/api/add-product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, price, short_desc, long_desc, category, image_url })
+        if (res.ok) {
+            alert('Product added successfully!');
+            location.reload();
+        } else {
+            alert('Failed to save product.');
+        }
     });
-
-    if (res.ok) {
-        alert('Product added successfully!');
-        location.reload();
-    } else {
-        alert('Failed to save product.');
-    }
 });
-
-// Initialize
-loadCategories();
