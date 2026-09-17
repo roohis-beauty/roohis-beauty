@@ -391,3 +391,29 @@ async function handleWhatsAppOrder() {
 document.addEventListener('DOMContentLoaded', () => {
     initCartSystem();
 });
+
+function addToCart(product) {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Check if item exists in cart
+    const existingIndex = cart.findIndex(item => item.id === product.id);
+    if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Update badge & open cart drawer
+    if (typeof updateCartBadge === 'function') updateCartBadge();
+    
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartDrawer && cartOverlay) {
+        cartDrawer.classList.add('open');
+        cartOverlay.classList.add('active');
+        if (typeof renderCartItems === 'function') renderCartItems();
+    }
+}
