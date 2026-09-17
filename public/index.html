@@ -13,14 +13,30 @@
 <body>
 
     <!-- Transparent Navbar -->
-    <nav id="navbar">
+    <!-- <nav id="navbar">
         <a href="#" class="nav-logo">ROOHI'S</a>
         <ul class="nav-links">
             <li><a href="#">Shop</a></li>
             <li><a href="#">Collections</a></li>
             <li><a href="#">Account</a></li>
         </ul>
-    </nav>
+    </nav> -->
+
+
+    <nav id="navbar">
+    <a href="#" class="nav-logo">ROOHI'S</a>
+    <ul class="nav-links">
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">Collections</a></li>
+        <li><a href="#">Account</a></li>
+        <!-- Cart Trigger Button -->
+        <li>
+            <button id="cartIconBtn" class="cart-icon-btn" aria-label="Open Cart">
+                🛒 <span id="cartBadge" class="cart-badge">0</span>
+            </button>
+        </li>
+    </ul>
+</nav>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -116,6 +132,27 @@
             <p>&copy; 2026 ROOHI'S SKINCARE. ALL RIGHTS RESERVED.</p>
         </div>
     </footer>
+    <!-- Dark Background Overlay -->
+<div id="cartOverlay" class="cart-overlay"></div>
+
+<!-- Slide-Out Cart Drawer -->
+<aside id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+        <h3>YOUR SHOPPING BAG</h3>
+        <button id="closeCartBtn" class="close-cart-btn">&times;</button>
+    </div>
+
+    <!-- Dynamic Cart Items Render Here -->
+    <div id="cartItemsContainer" class="cart-items-container"></div>
+
+    <div class="cart-footer">
+        <div class="cart-total-row">
+            <span>Subtotal</span>
+            <span id="cartTotalAmount">0 BDT</span>
+        </div>
+        <button id="checkoutBtn" class="checkout-btn">ORDER ON WHATSAPP</button>
+    </div>
+</aside>
     <!-- External JavaScript -->
     <script src="script.js"></script>
 </body>

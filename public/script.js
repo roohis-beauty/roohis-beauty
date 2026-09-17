@@ -231,3 +231,163 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load Products & Categories
     loadStoreCategoriesAndProducts();
 });
+// LocalStorage Handlers
+function getCart() {
+    return JSON.parse(localStorage.getItem('cart') || '[]');
+}
+
+function saveCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartBadge();
+    renderCartItems();
+}
+
+function updateCartBadge() {
+    const cart = getCart();
+    const badge = document.getElementById('cartBadge');
+    if (badge) {
+        const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        badge.textContent = totalCount;
+    }
+}
+
+// Drawer Controller
+function initCartSystem() {
+    const cartIconBtn = document.getElementById('cartIconBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    if (!cartDrawer || !cartOverlay) return;
+
+    const openCart = () => {
+        cartDrawer.classList.add('open');
+        cartOverlay.classList.add('active');
+        renderCartItems();
+    };
+
+    const closeCart = () => {
+        cartDrawer.classList.remove('open');
+        cartOverlay.classList.remove('active');
+    };
+
+    if (cartIconBtn) cartIconBtn.addEventListener('click', openCart);
+    if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
+    if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', handleWhatsAppOrder);
+    }
+
+    updateCartBadge();
+}
+
+// Render Cart Items
+function renderCartItems() {
+    const cart = getCart();
+    const container = document.getElementById('cartItemsContainer');
+    const totalEl = document.getElementById('cartTotalAmount');
+    if (!container) return;
+
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align: center; opacity: 0.6; margin-top: 40px;">Your shopping bag is empty.</p>';
+        if (totalEl) totalEl.textContent = '0 BDT';
+        return;
+    }
+
+    let grandTotal = 0;
+
+    container.innerHTML = cart.map((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        grandTotal += itemTotal;
+
+        return `
+            <div class="cart-item">
+                <img src="${item.image_url || 'media/cleanser.png'}" alt="${item.title}">
+                <div class="cart-item-details">
+                    <h4>${item.title}</h4>
+                    <div class="price">${item.price} BDT</div>
+                    <div class="cart-qty-controls">
+                        <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                        <button class="remove-item-btn" onclick="removeCartItem(${index})">Remove</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    if (totalEl) totalEl.textContent = `${grandTotal} BDT`;
+}
+
+// Quantity Adjustments
+window.changeQty = function(index, delta) {
+    const cart = getCart();
+    if (!cart[index]) return;
+
+    cart[index].quantity += delta;
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+    saveCart(cart);
+};
+
+window.removeCartItem = function(index) {
+    const cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+};
+
+// WhatsApp Direct Order Handler
+async function handleWhatsAppOrder() {
+    const cart = getCart();
+    if (cart.length === 0) {
+        alert('Your bag is empty!');
+        return;
+    }
+
+    let whatsappNumber = '';
+
+    try {
+        const res = await fetch('/api/get-config');
+        if (res.ok) {
+            const rawData = await res.json();
+            const configMap = {};
+            if (Array.isArray(rawData)) {
+                rawData.forEach(item => { configMap[item.key] = item.value; });
+            } else {
+                Object.assign(configMap, rawData);
+            }
+            whatsappNumber = configMap.whatsapp_number || configMap.phone || configMap.hotline || '';
+        }
+    } catch (err) {
+        console.error('Failed to load store contact:', err);
+    }
+
+    const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
+
+    if (!cleanNumber) {
+        alert('WhatsApp ordering is currently unavailable. Please check store contact configuration.');
+        return;
+    }
+
+    let message = `*NEW ORDER - ROOHI'S*\n-------------------\n`;
+    let grandTotal = 0;
+
+    cart.forEach((item, i) => {
+        const itemTotal = item.price * item.quantity;
+        grandTotal += itemTotal;
+        message += `${i + 1}. *${item.title}*\n   Qty: ${item.quantity} x ${item.price} BDT = ${itemTotal} BDT\n`;
+    });
+
+    message += `-------------------\n*Total Amount:* ${grandTotal} BDT\n\nI would like to place this order!`;
+
+    window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// Initialize when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    initCartSystem();
+});
