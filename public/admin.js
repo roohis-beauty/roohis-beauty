@@ -38,6 +38,58 @@ async function loadCategories() {
     }
 }
 
+// Load and render products inside the admin dashboard
+async function loadAdminProducts() {
+    const container = document.getElementById('adminProductsContainer') || document.getElementById('productList');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/get-products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const products = await res.json();
+
+        if (!Array.isArray(products) || products.length === 0) {
+            container.innerHTML = '<p>No products found.</p>';
+            return;
+        }
+
+        container.innerHTML = products.map(p => `
+            <div class="admin-product-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${p.image_url ? `<img src="${p.image_url}" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : ''}
+                    <div>
+                        <strong>${p.title}</strong> - $${p.price} <span style="font-size: 0.85em; opacity: 0.7;">(${p.category})</span>
+                    </div>
+                </div>
+                <button type="button" onclick="deleteProduct(${p.id})" style="background: #ff4d4d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Delete</button>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Error loading admin products:', e);
+    }
+}
+
+// Delete product handler
+async function deleteProduct(id) {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+        const response = await fetch(`/api/delete-product?id=${id}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            loadAdminProducts(); // Refresh the admin product list
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (err) {
+        console.error('Delete failed:', err);
+        alert('Failed to delete product.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
     // 1. DOM Elements
@@ -93,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardView?.classList.remove('hidden');
         loadCurrentConfig();
         loadCategories(); // Fetch categories when dashboard opens
+        loadAdminProducts(); // Fetch and display products list
     }
 
     // -----------------------------------------------------------------
@@ -401,3 +454,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+// Load and render products inside the admin dashboard
+async function loadAdminProducts() {
+    const container = document.getElementById('adminProductsContainer');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/get-products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const products = await res.json();
+
+        if (!Array.isArray(products) || products.length === 0) {
+            container.innerHTML = '<p style="font-size: 13px; color: #666;">No products found.</p>';
+            return;
+        }
+
+        container.innerHTML = products.map(p => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--admin-border); font-size: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${p.image_url ? `<img src="${p.image_url}" alt="" style="width: 36px; height: 36px; object-fit: cover; border-radius: 4px;">` : ''}
+                    <div>
+                        <strong>${p.title}</strong> — <span style="opacity: 0.8;">৳${p.price}</span> <span style="font-size: 0.8em; opacity: 0.6;">(${p.category})</span>
+                    </div>
+                </div>
+                <button type="button" onclick="deleteProduct(${p.id})" style="background: var(--danger-btn, #d9534f); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Delete</button>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Error loading admin products:', e);
+        container.innerHTML = '<p style="font-size: 13px; color: #d9534f;">Failed to load products.</p>';
+    }
+}

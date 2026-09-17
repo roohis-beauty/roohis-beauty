@@ -100,7 +100,7 @@ function restartAutoSlide() {
     startAutoSlide();
 }
 
-// 4. Load Categories & Products Grid
+// 4. Load Categories & Products Grid with Expandable "See All"
 async function loadStoreCategoriesAndProducts() {
     const container = document.getElementById('dynamicCategoriesContainer');
     if (!container) return;
@@ -130,23 +130,47 @@ async function loadStoreCategoriesAndProducts() {
             const section = document.createElement('section');
             section.className = 'category-section';
 
+            const cardsHtml = catProducts.map(p => `
+                <a href="product.html?id=${p.id}" class="scroll-card">
+                    <div class="card-image-box" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'});">
+                        <img src="${p.image_url || 'media/cleanser.png'}" alt="${p.title}">
+                    </div>
+                    <h3>${p.title}</h3>
+                    <p class="card-price">${p.price} BDT</p>
+                </a>
+            `).join('');
+
             section.innerHTML = `
                 <div class="category-header-bar" style="background-color: var(--main-bg, ${config.backgroundColor || '#fdfbf7'});">
                     <h2 class="category-title">${cat.name}</h2>
-                    <button class="see-all-btn" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'}); color: var(--main-text, #1a1a1a);">See All</button>
+                    <button class="see-all-btn" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'}); color: var(--main-text, #1a1a1a); cursor: pointer;">See All</button>
                 </div>
                 <div class="horizontal-cards-scroll">
-                    ${catProducts.map(p => `
-                        <a href="product.html?id=${p.id}" class="scroll-card">
-                            <div class="card-image-box" style="background-color: var(--secondary-color, ${config.secondaryColor || '#ffffff'});">
-                                <img src="${p.image_url || 'media/cleanser.png'}" alt="${p.title}">
-                            </div>
-                            <h3>${p.title}</h3>
-                            <p class="card-price">${p.price} BDT</p>
-                        </a>
-                    `).join('')}
+                    ${cardsHtml}
                 </div>
             `;
+
+            // Toggle functionality for the "See All" button
+            const seeAllBtn = section.querySelector('.see-all-btn');
+            const scrollContainer = section.querySelector('.horizontal-cards-scroll');
+
+            seeAllBtn.addEventListener('click', () => {
+                const isExpanded = scrollContainer.classList.toggle('grid-view');
+                if (isExpanded) {
+                    seeAllBtn.textContent = 'Show Less';
+                    scrollContainer.style.display = 'grid';
+                    scrollContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+                    scrollContainer.style.gap = '20px';
+                    scrollContainer.style.overflowX = 'visible';
+                } else {
+                    seeAllBtn.textContent = 'See All';
+                    scrollContainer.style.display = '';
+                    scrollContainer.style.gridTemplateColumns = '';
+                    scrollContainer.style.gap = '';
+                    scrollContainer.style.overflowX = '';
+                }
+            });
+
             container.appendChild(section);
         });
     } catch(e) { 
