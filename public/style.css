@@ -109,6 +109,7 @@ nav.scrolled .nav-logo {
   display: flex;
   align-items: center;
   gap: 15px;
+  z-index: 1002; /* Ensures button stays clickable above overlay */
 }
 
 .cart-icon-btn {
@@ -147,7 +148,7 @@ nav.scrolled .nav-logo {
   background: transparent;
   border: none;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 1002;
 }
 
 .menu-toggle span {
@@ -155,6 +156,19 @@ nav.scrolled .nav-logo {
   height: 2px;
   background-color: var(--main-text);
   transition: all 0.3s ease;
+}
+
+/* Hamburger to 'X' animation when menu is open */
+.menu-toggle.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 /* Mobile Nav Overlay Breakpoint */
@@ -185,13 +199,13 @@ nav.scrolled .nav-logo {
     padding: 40px;
     box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
     transition: right 0.4s ease;
+    z-index: 1001;
   }
 
   .nav-links.active {
     right: 0;
   }
 }
-
 /* ==========================================================================
    3. HERO SECTION
    ========================================================================== */
