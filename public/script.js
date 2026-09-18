@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load Products & Categories
     loadStoreCategoriesAndProducts();
 });
+
 // LocalStorage Handlers
 function getCart() {
     return JSON.parse(localStorage.getItem('cart') || '[]');
@@ -240,6 +241,9 @@ function saveCart(cart) {
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartBadge();
     renderCartItems();
+    if (typeof saveCartToDatabase === 'function') {
+        saveCartToDatabase();
+    }
 }
 
 function updateCartBadge() {
@@ -403,8 +407,8 @@ function addToCart(product) {
         cart.push({ ...product, quantity: 1 });
     }
     
-    // Save to localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
+    // Save to localStorage & Turso DB
+    saveCart(cart);
     
     // Update badge & open cart drawer
     if (typeof updateCartBadge === 'function') updateCartBadge();

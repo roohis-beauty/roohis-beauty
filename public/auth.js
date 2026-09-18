@@ -47,7 +47,7 @@ async function loginWithEmail(email, password) {
     }
 
     try {
-        const result = await auth.signInWithEmailAndPassword(email, password);
+        await auth.signInWithEmailAndPassword(email, password);
         alert("Successfully logged in!");
         location.reload();
     } catch (error) {
@@ -95,7 +95,24 @@ async function syncUserToDatabase(userData) {
     }
 }
 
-// 4. Sign Out Handler
+// 4. Save Current Cart to Turso Database
+async function saveCartToDatabase() {
+    const user = firebase.auth().currentUser;
+    if (!user) return; // Only sync if user is logged in
+
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    try {
+        await fetch('/api/sync-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: user.uid, cart })
+        });
+    } catch (err) {
+        console.error("Failed to sync cart to database:", err);
+    }
+}
+
+// 5. Sign Out Handler
 async function logoutUser() {
     try {
         await auth.signOut();
@@ -106,29 +123,15 @@ async function logoutUser() {
     }
 }
 
-// Automatically Update Navbar UI State
-auth.onAuthStateChanged((user) => {
-    const accountBtn = document.getElementById('accountNavBtn');
-    if (accountBtn) {
-        if (user) {
-            accountBtn.textContent = user.displayName || user.email.split('@')[0] || 'My Account';
-            accountBtn.onclick = () => {
-                if (confirm("Do you want to log out?")) {
-                    logoutUser();
-                }
-            };
-        } else {
-            accountBtn.textContent = 'Sign In';
-            accountBtn.onclick = loginWithGoogle;
-        }
-    }
-});
+// Modal Toggle Helpers
 function openAuthModal() {
-    document.getElementById('authModal').style.display = 'flex';
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeAuthModal() {
-    document.getElementById('authModal').style.display = 'none';
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function handleEmailAuth(e) {
@@ -138,39 +141,8 @@ function handleEmailAuth(e) {
     loginWithEmail(email, password);
 }
 
-// Attach opening logic to the nav button automatically
-auth.onAuthStateChanged((user) => {
-    const accountBtn = document.getElementById('accountNavBtn');
-    if (accountBtn) {
-        if (user) {
-            accountBtn.textContent = user.displayName || user.email.split('@')[0] || 'My Account';
-            accountBtn.onclick = () => {
-                if (confirm("Do you want to log out?")) logoutUser();
-            };
-        } else {
-            accountBtn.textContent = 'Sign In';
-            accountBtn.onclick = openAuthModal;
-        }
-    }
-});
-
-function openAuthModal() {
-    document.getElementById('authModal').style.display = 'flex';
-}
-
-function closeAuthModal() {
-    document.getElementById('authModal').style.display = 'none';
-}
-
-function handleEmailAuth(e) {
-    e.preventDefault();
-    const email = document.getElementById('authEmail').value;
-    const password = document.getElementById('authPassword').value;
-    loginWithEmail(email, password);
-}
-
-// Attach opening logic to the nav button automatically
-auth.onAuthStateChanged((user) => {
+// Automatically Update Navbar UI State & Sync User/Cart on Auth Change
+auth.onAuthStateChanged(async (user) => {
     const accountBtn = document.getElementById('accountNavBtn');
     if (accountBtn) {
         if (user) {
