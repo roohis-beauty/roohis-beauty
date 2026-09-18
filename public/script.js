@@ -421,3 +421,9 @@ function addToCart(product) {
         if (typeof renderCartItems === 'function') renderCartItems();
     }
 }
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+menuToggle.addEventListener('click', () => {
+  navLinks.classList.toggle('active');
+});
