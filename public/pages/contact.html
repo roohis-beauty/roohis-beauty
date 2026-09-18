@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Roohi's Luxury Skincare</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Main Theme Variables Link -->
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .page-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 24px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .info-card, .form-card {
+            background-color: var(--accent-bg);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+        .info-card h3, .form-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: var(--text-hover);
+        }
+        .info-card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            opacity: 0.85;
+        }
+        .contact-input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--main-text);
+            font-family: inherit;
+        }
+        .contact-input:focus {
+            outline: none;
+            border-color: var(--text-hover);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--text-hover);
+            color: var(--main-text);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Minimal Subpage Header -->
+    <nav style="position: fixed; top: 0; width: 100%; padding: 20px 6%; background: var(--accent-bg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 100;">
+        <a href="../index.html" class="nav-logo" style="opacity: 1; transform: none;">ROOHI'S</a>
+        <a href="../index.html" style="text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;">← BACK TO STORE</a>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">GET IN TOUCH</h1>
+            <p style="opacity: 0.8;">We'd love to assist you with your skin journey.</p>
+        </div>
+
+        <div class="contact-grid">
+            <div class="info-card">
+                <h3>Customer Support</h3>
+                <p>Have a question about an order or product recommendation?</p>
+                <p><strong>Email:</strong> support@roohis.com</p>
+                <p><strong>Hotline:</strong> +880 1700-000000</p>
+                <p><strong>Hours:</strong> Sun - Thu, 9am - 6pm</p>
+            </div>
+
+            <div class="form-card">
+                <h3>Send a Message</h3>
+                <form onsubmit="event.preventDefault(); alert('Message sent!');">
+                    <input type="text" placeholder="Your Name" required class="contact-input">
+                    <input type="email" placeholder="Your Email" required class="contact-input">
+                    <textarea placeholder="Your Message" rows="4" required class="contact-input"></textarea>
+                    <button type="submit" class="submit-btn">SEND MESSAGE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="site-footer" style="padding: 30px 5%; text-align: center;">
+        <p style="font-size: 0.8rem; opacity: 0.6;">&copy; 2026 ROOHI'S SKINCARE. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs | Roohi's Luxury Skincare</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Main Theme Variables Link -->
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .page-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 24px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .faq-item {
+            background-color: var(--accent-bg);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+        }
+        .faq-item summary {
+            font-weight: 600;
+            font-size: 1.05rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+        .faq-item summary::after {
+            content: '+';
+            font-size: 1.2rem;
+            color: var(--text-hover);
+        }
+        .faq-item[open] summary::after {
+            content: '−';
+        }
+        .faq-item p {
+            margin-top: 14px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Minimal Subpage Header -->
+    <nav style="position: fixed; top: 0; width: 100%; padding: 20px 6%; background: var(--accent-bg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 100;">
+        <a href="../index.html" class="nav-logo" style="opacity: 1; transform: none;">ROOHI'S</a>
+        <a href="../index.html" style="text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;">← BACK TO STORE</a>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">FREQUENTLY ASKED</h1>
+            <p style="opacity: 0.8;">Everything you need to know about our products and ordering.</p>
+        </div>
+
+        <div class="faq-list">
+            <details class="faq-item" open>
+                <summary>How do I place an order via WhatsApp?</summary>
+                <p>Simply add your desired items to the bag, open your cart drawer, and click "Order on WhatsApp." You will be redirected to complete your order details directly with our team.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>Are your products suitable for sensitive skin?</summary>
+                <p>Yes, all our curated skincare products are formulated to be gentle on skin barriers. We recommend checking individual product descriptions for specific key active ingredients.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>How long does delivery take?</summary>
+                <p>Standard delivery within Dhaka takes 1-2 business days. Delivery outside Dhaka usually takes 3-5 business days.</p>
+            </details>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="site-footer" style="padding: 30px 5%; text-align: center;">
+        <p style="font-size: 0.8rem; opacity: 0.6;">&copy; 2026 ROOHI'S SKINCARE. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+</body>
+</html>
